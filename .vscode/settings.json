@@ -37,8 +37,8 @@
         {
             "name": "defaulte",
             "tools": [
-                "xelatex",
-                "xelatex"
+                "pdflatex",
+                "pdflatex"
             ]
         },
         {
