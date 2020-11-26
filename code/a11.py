@@ -49,7 +49,7 @@ def draw(data):
                 if np.linalg.norm(new-data[j, :]) < abs(d)*0.999:
                     k = 1
                     break
-            if np.linalg.norm(new-data[i+1, :]) > abs(d)*2:
+            if np.linalg.norm(new-data[i+1, :]) > abs(d)*3:
                 k = 1
             if k == 0:
                 temp = np.row_stack((temp, new))
