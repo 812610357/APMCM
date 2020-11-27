@@ -63,6 +63,8 @@ def icr(v1, v2):  # 内切圆半径
 
 
 def draw(data):
+    data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
+    data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
     temp = np.array([0, 0])
     times = data.shape[0]-2
     i = 0
@@ -70,18 +72,18 @@ def draw(data):
         k = 0
         v1 = data[i+1, :]-data[i, :]
         v2 = data[i+2, :]-data[i+1, :]
-        if roc(v1, v2) > abs(d) and inangle(v1, v2) < 0.9*math.pi:
+        if 1:  # roc(v1, v2) > abs(d) and inangle(v1, v2) < 0.9*math.pi:
             u = d/(math.sin(inangle(v1, v2)))
             if (angle(v2) > angle(v1) and not(angle(v2) > math.pi/2 and angle(v1) < -math.pi/2)) or (angle(v2) < -math.pi/2 and angle(v1) > math.pi/2):
                 new = data[i+1, :]+(unit(v2)-unit(v1))*u
             else:
                 new = data[i+1, :]-(unit(v2)-unit(v1))*u
-            for j in range(0, data.shape[0]):
+            for j in range(0, data.shape[0]-2):
                 if np.linalg.norm(new-data[j, :]) < abs(d)*0.999:
                     k = 1
                     break
-            if np.linalg.norm(new-data[i+1, :]) > abs(d)*5 or (temp.shape[0] > 1 and np.linalg.norm(new-temp[temp.shape[0]-1]) < abs(d)*0.1):
-                k = 1
+            # if np.linalg.norm(new-data[i+1, :]) > abs(d)*5 or (temp.shape[0] > 1 and np.linalg.norm(new-temp[temp.shape[0]-1]) < abs(d)*0.1):
+            #    k = 1
 #            if np.linalg.norm(new-temp[temp.shape[0]-2]) < abs(d)*1.5:
 #                temp = np.delete(temp, temp.shape[0]-1, axis=0)
             if k == 0:
@@ -90,40 +92,27 @@ def draw(data):
             data = np.delete(data, i+1, axis=0)
             times -= 1
         i += 1
+    temp = np.delete(temp, 0, axis=0)
 
     j = 1
+    i = 0
     while j:
-        extx = np.array([0])  # 极值点序列
-        exty = np.array([0])
-        for i in range(temp.shape[0]-2):
+        j = 0
+        while i < temp.shape[0]-3:
             v1 = temp[i+1, :]-temp[i, :]
             v2 = temp[i+2, :]-temp[i+1, :]
-            j = 0
-            if findex(v1, v2) == 1:
-                extx = np.append(extx, [i+1])
-            else:
-                if findex(v1, v2) == 2:
-                    exty = np.append(exty, [i+1])
-        extx = np.delete(extx, 0, axis=0)
-        exty = np.delete(exty, 0, axis=0)
-
-        for i in range(extx.shape[0]-1):
-            if extx[i]+1 == extx[i+1]:
-                temp = np.delete(temp, [extx[i], extx[i+1]], axis=0)
-                j = 1
-                break
-        for i in range(exty.shape[0]-1):
-            if exty[i]+1 == exty[i+1]:
-                temp = np.delete(temp, [exty[i], exty[i+1]], axis=0)
+            v3 = temp[i+3, :]-temp[i+2, :]
+            i += 1
+            if inangle(v1, v2)+inangle(v2, v3) > math.pi:
+                temp = np.delete(temp, [i, i+1], axis=0)
                 j = 1
                 break
 
-    temp = np.delete(temp, 0, axis=0)
-    plt.plot(data[:, 0], data[:, 1], '-o', color='r', markersize=2)
+    plt.plot(temp[:, 0], data[:, 1], '-o', color='r', markersize=2)
     return(temp)
 
 
-for m in range(22):
+for m in range(32):
     data = draw(data)
     print(m)
 

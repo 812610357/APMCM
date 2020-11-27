@@ -63,6 +63,8 @@ def icr(v1, v2):  # 内切圆半径
 
 
 def draw(data):
+    data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
+    data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
     temp = np.array([0, 0])
     times = data.shape[0]-2
     i = 0
@@ -70,7 +72,7 @@ def draw(data):
         k = 0
         v1 = data[i+1, :]-data[i, :]
         v2 = data[i+2, :]-data[i+1, :]
-        if roc(v1, v2) > abs(d) and inangle(v1, v2) < 0.9*math.pi:
+        if 1:  # roc(v1, v2) > abs(d) and inangle(v1, v2) < 0.9*math.pi:
             u = d/(math.sin(inangle(v1, v2)))
             if (angle(v2) > angle(v1) and not(angle(v2) > math.pi/2 and angle(v1) < -math.pi/2)) or (angle(v2) < -math.pi/2 and angle(v1) > math.pi/2):
                 new = data[i+1, :]+(unit(v2)-unit(v1))*u
@@ -80,8 +82,8 @@ def draw(data):
                 if np.linalg.norm(new-data[j, :]) < abs(d)*0.999:
                     k = 1
                     break
-            if np.linalg.norm(new-data[i+1, :]) > abs(d)*5 or (temp.shape[0] > 1 and np.linalg.norm(new-temp[temp.shape[0]-1]) < abs(d)*0.1):
-                k = 1
+            # if np.linalg.norm(new-data[i+1, :]) > abs(d)*5 or (temp.shape[0] > 1 and np.linalg.norm(new-temp[temp.shape[0]-1]) < abs(d)*0.1):
+            #    k = 1
 #            if np.linalg.norm(new-temp[temp.shape[0]-2]) < abs(d)*1.5:
 #                temp = np.delete(temp, temp.shape[0]-1, axis=0)
             if k == 0:
@@ -106,11 +108,11 @@ def draw(data):
                 j = 1
                 break
 
-    plt.plot(data[:, 0], data[:, 1], '-o', color='r', markersize=2)
+    plt.plot(temp[:, 0], data[:, 1], '-o', color='r', markersize=2)
     return(temp)
 
 
-for m in range(30):
+for m in range(32):
     data = draw(data)
     print(m)
 
