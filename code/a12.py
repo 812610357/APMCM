@@ -108,7 +108,7 @@ def draw(data):
                 j = 1
                 break
 
-    plt.plot(temp[:, 0], data[:, 1], '-o', color='r', markersize=2)
+    plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=2)
     return(temp)
 
 
