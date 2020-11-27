@@ -103,9 +103,12 @@ def divide(data):
 
 
 def scan(data):
+    temp = new = np.array([0, 0])
     for i in range(data.shape[0]-2):
-        if data[i, 1]//abs[d]+0.1 == data[i+1, 1]:
-
+        if data[i, 1]//abs[d]*abs[d]+abs[d] == data[i+1, 1]//abs[d]*abs[d]:
+            new[1] = data[i+1, 1]//abs[d]*abs[d]
+            k = (data[i+1, 1]-data[i, 1])/(data[i+1, 0]-data[i, 0])  # 差分法取整点
+            new[0] = (new[1]-data[i, 1])/k+data[i, 0]
     return(data)
 
 
