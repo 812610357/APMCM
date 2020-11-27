@@ -91,23 +91,30 @@ def draw(data):
             times -= 1
         i += 1
 
-    extx = np.array([0])  # 极值点序列
-    exty = np.array([0])
-    for i in range(temp.shape[0]-2):
-        v1 = temp[i+1, :]-temp[i, :]
-        v2 = temp[i+2, :]-temp[i+1, :]
-        if findex(v1, v2) == 1:
-            extx = np.append(extx, [i+1])
-        else:
-            if findex(v1, v2) == 2:
-                exty = np.append(exty, [i+1])
+    j = 1
+    while j:
+        extx = np.array([0])  # 极值点序列
+        exty = np.array([0])
+        for i in range(temp.shape[0]-2):
+            v1 = temp[i+1, :]-temp[i, :]
+            v2 = temp[i+2, :]-temp[i+1, :]
+            j = 0
+            if findex(v1, v2) == 1:
+                extx = np.append(extx, [i+1])
+            else:
+                if findex(v1, v2) == 2:
+                    exty = np.append(exty, [i+1])
+        extx = np.delete(extx, 0, axis=0)
+        exty = np.delete(exty, 0, axis=0)
 
-    for i in range(extx.shape[0]-1):
-        if extx[i]+1 == extx[i+1]:
-            temp = np.delete(temp, [extx[i], extx[i+1]], axis=0)
-    for i in range(exty.shape[0]-1):
-        if exty[i]+1 == exty[i+1]:
-            temp = np.delete(temp, [exty[i], exty[i+1]], axis=0)
+        for i in range(extx.shape[0]-1):
+            if extx[i]+1 == extx[i+1]:
+                temp = np.delete(temp, [extx[i], extx[i+1]], axis=0)
+                j = 1
+        for i in range(exty.shape[0]-1):
+            if exty[i]+1 == exty[i+1]:
+                temp = np.delete(temp, [exty[i], exty[i+1]], axis=0)
+                j = 1
 
     temp = np.delete(temp, 0, axis=0)
     plt.plot(data[:, 0], data[:, 1], '-o', color='r', markersize=2)
