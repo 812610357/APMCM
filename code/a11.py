@@ -4,6 +4,9 @@ from numpy.linalg.linalg import solve
 import pandas as pd
 import os
 import math
+import time
+
+start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
 d = -0.1
@@ -58,8 +61,11 @@ def draw(data):
     return(temp)
 
 
-for m in range(10):
+for m in range(1):
     data = draw(data)
     print(m)
+
+end = time.thread_time()
+print('Running time: %s Seconds' % (end-start))
 
 plt.show()
