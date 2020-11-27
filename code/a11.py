@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.core.defchararray import array
 import pandas as pd
 import os
 import math
@@ -18,10 +19,13 @@ def findex(v1, v2):
     y1 = v1[1]
     x2 = (v1+v2)[0]
     y2 = (v1+v2)[1]
-    if (x1 > 0 and x1 > x2) or (x1 < 0 and x1 < x2) or (y1 > 0 and y1 > y2) or (y1 < 0 and y1 < y2):
+    if (x1 > 0 and x1 > x2) or (x1 < 0 and x1 < x2):
         return(1)
     else:
-        return(0)
+        if(y1 > 0 and y1 > y2) or (y1 < 0 and y1 < y2):
+            return(2)
+        else:
+            return(0)
 
 
 def unit(v):  # 单位化
@@ -62,7 +66,6 @@ def draw(data):
     temp = np.array([0, 0])
     times = data.shape[0]-2
     i = 0
-    extreme = np.array([0])  # 极值点序列
     while i < times:
         k = 0
         v1 = data[i+1, :]-data[i, :]
@@ -79,8 +82,6 @@ def draw(data):
                     break
             if np.linalg.norm(new-data[i+1, :]) > abs(d)*5 or (temp.shape[0] > 1 and np.linalg.norm(new-temp[temp.shape[0]-1]) < abs(d)*0.1):
                 k = 1
-            if findex(v1, v2) == 1:
-                extreme = np.append(extreme, [i+1])
 #            if np.linalg.norm(new-temp[temp.shape[0]-2]) < abs(d)*1.5:
 #                temp = np.delete(temp, temp.shape[0]-1, axis=0)
             if k == 0:
@@ -89,15 +90,31 @@ def draw(data):
             data = np.delete(data, i+1, axis=0)
             times -= 1
         i += 1
-    for i in range(extreme.shape[0]-1):
-        if extreme[i]+1 == extreme[i+1]:
-            data = np.delete(data, [extreme[i], extreme[i+1]], axis=0)
+
+    extx = np.array([0])  # 极值点序列
+    exty = np.array([0])
+    for i in range(temp.shape[0]-2):
+        v1 = temp[i+1, :]-temp[i, :]
+        v2 = temp[i+2, :]-temp[i+1, :]
+        if findex(v1, v2) == 1:
+            extx = np.append(extx, [i+1])
+        else:
+            if findex(v1, v2) == 2:
+                exty = np.append(exty, [i+1])
+
+    for i in range(extx.shape[0]-1):
+        if extx[i]+1 == extx[i+1]:
+            temp = np.delete(temp, [extx[i], extx[i+1]], axis=0)
+    for i in range(exty.shape[0]-1):
+        if exty[i]+1 == exty[i+1]:
+            temp = np.delete(temp, [exty[i], exty[i+1]], axis=0)
+
     temp = np.delete(temp, 0, axis=0)
     plt.plot(data[:, 0], data[:, 1], '-o', color='r', markersize=2)
     return(temp)
 
 
-for m in range(20):
+for m in range(30):
     data = draw(data)
     print(m)
 
