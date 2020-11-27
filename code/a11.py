@@ -61,7 +61,7 @@ def draw(data):
     return(temp)
 
 
-for m in range(1):
+for m in range(10):
     data = draw(data)
     print(m)
 
