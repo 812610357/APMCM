@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.core.fromnumeric import shape
 import pandas as pd
 import os
 import math
@@ -101,6 +102,13 @@ def divide(data):
     return(data)
 
 
+def scan(data):
+    for i in range(data.shape[0]-2):
+        if data[i, 1]//abs[d]+0.1 == data[i+1, 1]:
+
+    return(data)
+
+
 data = draw(data)
 data = divide(data)
 
@@ -109,5 +117,3 @@ end = time.thread_time()
 print('Running time: %s Seconds' % (end-start))
 
 plt.show()
-
-np.append
