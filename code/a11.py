@@ -111,17 +111,19 @@ def draw(data):
             if extx[i]+1 == extx[i+1]:
                 temp = np.delete(temp, [extx[i], extx[i+1]], axis=0)
                 j = 1
+                break
         for i in range(exty.shape[0]-1):
             if exty[i]+1 == exty[i+1]:
                 temp = np.delete(temp, [exty[i], exty[i+1]], axis=0)
                 j = 1
+                break
 
     temp = np.delete(temp, 0, axis=0)
     plt.plot(data[:, 0], data[:, 1], '-o', color='r', markersize=2)
     return(temp)
 
 
-for m in range(30):
+for m in range(22):
     data = draw(data)
     print(m)
 
