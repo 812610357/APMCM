@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.core.defchararray import array
 import pandas as pd
 import os
 import math
@@ -14,15 +13,11 @@ plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 
 
-def findex(v1, v2):  # 寻找y极值，极大返回1，极小返回2
-    x1 = v1[0]
-    y1 = v1[1]
-    x2 = (v1+v2)[0]
-    y2 = (v1+v2)[1]
-    if (y1 > 0 and y1 > y2):
+def findex(data, i):  # 寻找y极值，极大返回1，极小返回2
+    if (data[i, 1] > data[i-1, 1] and data[i, 1] > data[i+1, 1]):
         return(1)
     else:
-        if (y1 < 0 and y1 < y2):
+        if (data[i, 1] < data[i-1, 1] and data[i, 1] < data[i+1, 1]):
             return(2)
         else:
             return(0)
@@ -68,9 +63,51 @@ def draw(data):
     return(temp)
 
 
+def divide(data):
+    my = np.array([0, 0])
+    for i in range(data.shape[0]-2):
+        k = 0
+        if findex(data, i+1) == 1:
+            for j in range(i+1, -3, -1):
+                if data[j, 1] > data[i+1, 1]:
+                    if data[j+1, 1] <= data[i+1, 1]:
+                        k += 1
+                    break
+            for j in range(i+1, data.shape[0]-2):
+                if data[j, 1] > data[i+1, 1]:
+                    if data[j-1, 1] <= data[i+1, 1]:
+                        k += 1
+                    break
+            if k == 2:
+                my = np.row_stack(
+                    (my, [i+1, (data[i+1, 1])//abs(d)*abs(d)+abs(d)]))
+        else:
+            if findex(data, i+1) == 2:
+                for j in range(i+1, -3, -1):
+                    if data[j, 1] < data[i+1, 1]:
+                        if data[j+1, 1] >= data[i+1, 1]:
+                            k += 1
+                        break
+                for j in range(i+1, data.shape[0]-2):
+                    if data[j, 1] < data[i+1, 1]:
+                        if data[j-1, 1] >= data[i+1, 1]:
+                            k += 1
+                        break
+                if k == 2:
+                    my = np.row_stack(
+                        (my, [i+1, (data[i+1, 1])//abs(d)*abs(d)]))
+    my = np.delete(my, 0, axis=0)
+    print(my)
+    return(data)
+
+
 data = draw(data)
+data = divide(data)
+
 
 end = time.thread_time()
 print('Running time: %s Seconds' % (end-start))
 
 plt.show()
+
+np.append
