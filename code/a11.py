@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.linalg.linalg import solve
 import pandas as pd
 import os
 import math
