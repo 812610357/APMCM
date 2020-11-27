@@ -4,4 +4,4 @@ import math
 
 a = np.array([0])
 a = np.append(a, [1])
-print(math.acos(0))
+print(a[a.shape[0]-1])
