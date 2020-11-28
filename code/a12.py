@@ -9,7 +9,7 @@ import time
 start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
-d = -0.1
+d = -1
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 
@@ -112,7 +112,7 @@ def draw(data):
     return(temp)
 
 
-for m in range(32):
+for m in range(3):
     data = draw(data)
     print(m)
 
