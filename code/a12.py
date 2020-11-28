@@ -11,7 +11,7 @@ import time
 start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
-d = -1
+d = -0.1
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 
@@ -92,8 +92,8 @@ def draw(data):
                 i += 1
                 continue
         i += 1
-        # if np.linalg.norm(new-temp[-1]) < abs(d)*0.4 or np.linalg.norm(new-temp[-2]) < abs(d)*0.4:
-        #    continue
+        if np.linalg.norm(new-temp[-1]) < abs(d)*0.3 or np.linalg.norm(new-temp[-2]) < abs(d)*0.3:
+            continue
         temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
     temp = iflong(temp)
@@ -121,9 +121,11 @@ def ifwide(data, last):
     while i < data.shape[0]:
         j = 0
         while j < last.shape[0]:
+            if i >= data.shape[0]:
+                break
             if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:
                 data = np.delete(data, i, axis=0)
-                j -= 10
+                j -= 20
             else:
                 j += 1
         i += 1
@@ -165,15 +167,17 @@ def ifdivide(data):  # 判断区域划分
 def area(data):
     while True:
         temp = data[-1]
-        if data[0].shape[0] < 10:
+        if data[0].shape[0] < 200:
             break
         if temp.shape[0] < 30:
             del data[len(data)-1]
+            print(0)
             continue
         index = ifdivide(temp)  # 分割点序号
         if index[0] == 0 and index[1] == 0:
             data[-1] = draw(temp)
-            plt.show()
+            print(1)
+            # plt.show()
         else:
             data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
             temp1 = temp[0:math.floor(index[0])+1, :]
