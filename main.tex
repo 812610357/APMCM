@@ -170,13 +170,13 @@ Zigzag, as the most common hatching method at present, has many sharp turns. For
 1) Similar to the contour parallel hatch, the Fermat spiral only has a sharp turn at the center.
 2) Some Fermat spirals can continuously fill the 2D area; traditional spirals are either inward or outward, and Fermat spirals are both inward and outward, and can meet at the boundary.
 3) To facilitate the connection between the spirals, the start and end nodes of the Fermat spiral can be selected arbitrarily at the boundary.
-
-
-
 \subsection{Optimization of performance and efficiency}
+\subsubsection{Reducing the idling of the robotic arm}
+In actual industrial applications, in addition to the running time of the algorithm, we must consider another time cost, the efficiency of the robot's movement. In the zigzag incubation, according to the complexity of the graphics, we have to partition them. This results in a certain distance between the start and end of each curve. It takes a certain amount of time for the robot arm to move between these. In order to reduce this waste, we need to make a more reasonable design for the partition and the angle between the parallel line and the x-axis. In the same way, there will be multiple converging centers in contour hatching. Reduce the number of converging centers as much as possible, which means reducing the blank movement time of the robotic arm.
 
-
-\subsection{Realization of practical industrial applications}
+\subsubsection{Reducing the amount of data}
+In the actual laser marking process, the original image often contains a large number of data points. To delete redundant or isolated data points can shorten the running time of the program.
+\subsubsection{Reducing the time complexity of the algorithm}
 
 
 
