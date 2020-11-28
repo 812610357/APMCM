@@ -10,7 +10,8 @@ import time
 
 start = time.thread_time()
 
-data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
+data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
+data = data0  # 从csv文件获取数据
 d = -0.1
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
@@ -97,9 +98,9 @@ def draw(data):
         temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
     temp = iflong(temp)
-    temp = ifcross(temp)
+    #temp = ifcross(temp)
     temp = ifwide(temp, data)
-    plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=2)
+    plt.plot(temp[:, 0], temp[:, 1], '-', color='r')
     return(temp)
 
 
@@ -156,10 +157,10 @@ def ifdivide(data):  # 判断区域划分
             y1 = data[i, 1]
             x2 = data[j, 0]
             y2 = data[j, 1]
-            if math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 20:
+            if math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 3:
                 v1 = data[i+2, :]-data[i, :]
                 v2 = data[j+2, :]-data[j, :]
-                if angle(v1)-angle(v2) > math.pi/2:
+                if abs(angle(v1)-angle(v2)) > math.pi/2:
                     return(np.array([i, j]))
     return(np.array([0, 0]))
 
@@ -167,9 +168,9 @@ def ifdivide(data):  # 判断区域划分
 def area(data):
     while True:
         temp = data[-1]
-        if data[0].shape[0] < 200:
+        if data[0].shape[0] < 10:
             break
-        if temp.shape[0] < 30:
+        if temp.shape[0] < 10:
             del data[len(data)-1]
             print(0)
             continue
@@ -177,7 +178,9 @@ def area(data):
         if index[0] == 0 and index[1] == 0:
             data[-1] = draw(temp)
             print(1)
+            #plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
             # plt.show()
+            # plt.axis("equal")
         else:
             data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
             temp1 = temp[0:math.floor(index[0])+1, :]
