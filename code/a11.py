@@ -32,7 +32,7 @@ def inangle(v1, v2):  # 向量夹角
     return(math.acos(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2))))
 
 
-def draw(data):
+def drawborder(data):
     data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
     data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
     temp = np.array([0, 0])
@@ -86,8 +86,8 @@ def getint(data):
 
 
 def getline(data):
-    op = np.array([0, 0])
-    ed = temp = np.array([0])
+    temp = 0
+    line = np.array([0, 0, 0])
     for i in range(1, data.shape[0]-2):
         k = 0
         if findex(data, i) == 1:
@@ -97,7 +97,7 @@ def getline(data):
                 else:
                     l = j
                 if data[i+l+1, 1] == data[i, 1]:
-                    temp = np.array([i+l+1])
+                    temp = i+l+1
                     if data[i+l+1, 0] > data[i, 0]:
                         k += 2
                     else:
@@ -111,19 +111,24 @@ def getline(data):
                         k += 1
                     break
             if k == 3:
-                op = np.row_stack((op, [data[i, 1], i]))
-                ed = np.row_stack((ed, temp))
-    line = np.column_stack((op, ed))
-    line = np.delete(line, 0, axis=0)
+                line = np.array([data[i, 1], i, temp])
+                print(line)
+                return(line)
+                break
     print(line)
     return(line)
 
 
 def divide(data, line):
+
     pass
 
 
-data = draw(data)
+def getborder():
+    pass
+
+
+data = drawborder(data)
 data = getint(data)
 line = getline(data)
 data = divide(data, line)
