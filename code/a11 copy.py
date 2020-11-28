@@ -13,11 +13,14 @@ plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 
 
-def findex(data, i):  # 极值返回1
-    if (data[i, 1] >= data[i-1, 1] and data[i, 1] > data[i+1, 1]) or (data[i, 1] <= data[i-1, 1] and data[i, 1] < data[i+1, 1]):
+def findex(data, i):  # 寻找y极值，极大返回1，极小返回2
+    if (data[i, 1] >= data[i-1, 1] and data[i, 1] > data[i+1, 1]):
         return(1)
     else:
-        return(0)
+        if (data[i, 1] <= data[i-1, 1] and data[i, 1] < data[i+1, 1]):
+            return(2)
+        else:
+            return(0)
 
 
 def unit(v):  # 单位化
@@ -60,6 +63,44 @@ def draw(data):
     return(temp)
 
 
+def divide(data):
+    op = np.array([0, 0])
+    for i in range(1, data.shape[0]-2):
+        k = 0
+        if findex(data, i+1) == 1:
+            for j in range(i+1, -3, -1):
+                if data[j, 1] > data[i+1, 1]:
+                    if data[j+1, 1] <= data[i+1, 1]:
+                        k += 1
+                    break
+            for j in range(i+1, data.shape[0]-2):
+                if data[j, 1] > data[i+1, 1]:
+                    if data[j-1, 1] <= data[i+1, 1]:
+                        k += 1
+                    break
+            if k == 2:
+                op = np.row_stack(
+                    (op, [i+1, math.floor((data[i+1, 1])//abs(d))*abs(d)+abs(d)]))
+        else:
+            if findex(data, i+1) == 2:
+                for j in range(i+1, -100, -1):
+                    if data[j, 1] < data[i+1, 1]:
+                        if data[j+1, 1] >= data[i+1, 1]:
+                            k += 1
+                        break
+                for j in range(i+1, data.shape[0]-2):
+                    if data[j, 1] < data[i+1, 1]:
+                        if data[j-1, 1] >= data[i+1, 1]:
+                            k += 1
+                        break
+                if k == 2:
+                    op = np.row_stack(
+                        (op, [i+1, math.floor((data[i+1, 1])//abs(d))*abs(d)]))
+    op = np.delete(op, 0, axis=0)
+    print(op)
+    return(op)
+
+
 def getint(data):
     temp = new = np.array([0, 0.])
     for i in range(data.shape[0]-1):
@@ -80,53 +121,13 @@ def getint(data):
                     new[0] = (new[1]-y1)/k+x1
                     temp = np.row_stack((temp, new))
     temp = np.insert(temp, temp.shape[0], values=temp[0, :], axis=0)
-    temp = np.delete(temp, 0, axis=0)
     plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
     return(temp)
 
 
-def getline(data):
-    op = np.array([0, 0])
-    ed = temp = np.array([0])
-    for i in range(1, data.shape[0]-2):
-        k = 0
-        if findex(data, i) == 1:
-            for j in range(data.shape[0]*2//3):
-                if j+i >= data.shape[0]-1:
-                    l = j-data.shape[0]
-                else:
-                    l = j
-                if data[i+l+1, 1] == data[i, 1]:
-                    temp = np.array([i+l+1])
-                    if data[i+l+1, 0] > data[i, 0]:
-                        k += 2
-                    else:
-                        k += 1
-                    break
-            for j in range(data.shape[0]*2//3):
-                if data[i-j-2, 1] == data[i, 1]:
-                    if data[i-j-2, 0] > data[i, 0]:
-                        k += 2
-                    else:
-                        k += 1
-                    break
-            if k == 3:
-                op = np.row_stack((op, [data[i, 1], i]))
-                ed = np.row_stack((ed, temp))
-    line = np.column_stack((op, ed))
-    line = np.delete(line, 0, axis=0)
-    print(line)
-    return(line)
-
-
-def divide(data, line):
-    pass
-
-
 data = draw(data)
 data = getint(data)
-line = getline(data)
-data = divide(data, line)
+op = divide(data)
 
 end = time.thread_time()
 print('Running time: %s Seconds' % (end-start))
