@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.core.defchararray import array
+from numpy.core.fromnumeric import shape
 import pandas as pd
 import os
 import math
@@ -9,7 +10,7 @@ import time
 start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
-d = -1
+d = -0.1
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 
@@ -37,7 +38,7 @@ def angle(v):  # 取辐角
 
 
 def inangle(v1, v2):  # 向量夹角
-    return(math.acos(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2))))
+    return(math.acos(round(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2)), 9)))
 
 
 def roc(v1, v2):  # 外接圆半径
@@ -66,36 +67,60 @@ def draw(data):
     data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
     data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
     temp = np.array([0, 0])
-    times = data.shape[0]-2
     i = 0
-    while i < times:
-        k = 0
+    while i < data.shape[0]-2:
         v1 = data[i+1, :]-data[i, :]
         v2 = data[i+2, :]-data[i+1, :]
-        if 1:  # roc(v1, v2) > abs(d) and inangle(v1, v2) < 0.9*math.pi
+        # v1 = np.array([round(data[i+1, 0]-data[i, 0], 5),
+        #               round(data[i+1, 1]-data[i, 1], 5)])
+        # v2 = np.array([round(data[i+2, 0]-data[i+1, 0], 5),
+        #               round(data[i+2, 1]-data[i+1, 1], 5)])
+        if inangle(v1, v2):
             u = d/(math.sin(inangle(v1, v2)))
             if (angle(v2) > angle(v1) and not(angle(v2) > math.pi/2 and angle(v1) < -math.pi/2)) or (angle(v2) < -math.pi/2 and angle(v1) > math.pi/2):
                 new = data[i+1, :]+(unit(v2)-unit(v1))*u
             else:
                 new = data[i+1, :]-(unit(v2)-unit(v1))*u
-            for j in range(0, data.shape[0]-2):
-                if np.linalg.norm(new-data[j, :]) < abs(d)*0.99:
-                    k = 1
-                    break
-            # if np.linalg.norm(new-data[i+1, :]) > abs(d)*5 or (temp.shape[0] > 1 and np.linalg.norm(new-temp[temp.shape[0]-1]) < abs(d)*0.1):
-            #    k = 1
-#            if np.linalg.norm(new-temp[temp.shape[0]-2]) < abs(d)*1.5:
-#                temp = np.delete(temp, temp.shape[0]-1, axis=0)
-            if k == 0:
-                temp = np.row_stack((temp, new))
         else:
-            data = np.delete(data, i+1, axis=0)
-            times -= 1
+            if angle(v1) > 0:
+                new = data[i+1, :] + unit([v1[1], -v1[0]])*abs(d)
+            else:
+                new = data[i+1, :] - unit([-v1[1], v1[0]])*abs(d)
+        temp = np.row_stack((temp, new))
         i += 1
     temp = np.delete(temp, 0, axis=0)
+    temp = iflong(temp)
     temp = ifcross(temp)
+    temp = ifwide(temp, data)
     plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=2)
     return(temp)
+
+
+def iflong(data):
+    i = 0
+    while i < data.shape[0]-1:
+        if np.linalg.norm(data[i+1, :]-data[i, :]) > 2*abs(d):
+            new = np.array([(data[i+1, 0]+data[i, 0])/2,
+                            (data[i+1, 1]+data[i, 1])/2])
+            data = np.insert(data, i+1, new,  axis=0)
+            continue
+        else:
+            i = i+1
+    return(data)
+
+
+def ifwide(data, last):
+    i = 0
+    while i < data.shape[0]:
+        j = 0
+        while j < last.shape[0]:
+            if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:
+                data = np.delete(data, i, axis=0)
+                j -= 20
+            else:
+                j += 1
+        i += 1
+    return(data)
 
 
 def ifcross(data):
@@ -130,7 +155,7 @@ def ifdivide(data):  # 判断区域划分
     return(0)
 
 
-for m in range(8):
+for m in range(10):
     data = draw(data)
     print(m)
 
