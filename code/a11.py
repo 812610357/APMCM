@@ -1,3 +1,4 @@
+from os import write
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -8,7 +9,7 @@ import time
 start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
-d = -1
+d = -0.1
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 
@@ -113,9 +114,10 @@ def getline(data):
             if k == 3:
                 line = np.array([data[i, 1], i, temp])
                 print(line)
-#                dots = np.array([data[math.floor(line[1]), :],
-#                                 data[math.floor(line[2]), :]])
-#                plt.plot(dots[:, 0], dots[:, 1], '--o', color='g', markersize=2)
+                dots = np.array([data[math.floor(line[1]), :],
+                                 data[math.floor(line[2]), :]])
+                plt.plot(dots[:, 0], dots[:, 1], '--o',
+                         color='g', markersize=2)
                 return(line)
     print(line)
     return(line)
@@ -139,7 +141,21 @@ def divide(data):
     return(data)
 
 
-def getborder():
+def writecsv(data):
+    for i in range(len(data)-1):
+        area = data[i]
+        dataframe = pd.DataFrame(data={'x': area[:, 0], 'y': area[:, 1]})
+        dataframe.to_csv(f".\code\\area{i}.csv",
+                         index=False, mode='w', sep=',')
+    pass
+
+
+def drawline(data):
+    length = 0  # 画线总长
+    for i in range(len(data)-1):
+        area = data[i]
+        maxy = max(area[:, 1])
+        miny = min(area[:, 1])
     pass
 
 
@@ -147,8 +163,21 @@ data = drawborder(data)
 data = getint(data)
 data = list([data])
 data = divide(data)
+writecsv(data)
+# drawline(data)
 
-plt.plot((data[0])[:, 0], (data[0])[:, 1], '-o',color='y', markersize=2)
+
+'''
+data = np.array(pd.read_csv(".\code\\area0.csv", header=0))
+data = list([data])
+data.append(np.array(pd.read_csv(".\code\\area1.csv", header=0)))
+data.append(np.array(pd.read_csv(".\code\\area2.csv", header=0)))
+data.append(np.array(pd.read_csv(".\code\\area3.csv", header=0)))
+data.append(np.array(pd.read_csv(".\code\\area4.csv", header=0)))
+drawline(data)
+'''
+
+# plt.plot((data[0])[:, 0], (data[0])[:, 1], '-o',color='y', markersize=2)
 
 end = time.thread_time()
 print('Running time: %s Seconds' % (end-start))
