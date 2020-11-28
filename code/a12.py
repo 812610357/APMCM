@@ -1,3 +1,4 @@
+from operator import truediv
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.core.defchararray import array
@@ -10,7 +11,7 @@ import time
 start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
-d = -0.1
+d = -1
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 
@@ -91,8 +92,8 @@ def draw(data):
                 i += 1
                 continue
         i += 1
-        if np.linalg.norm(new-temp[-2]) < abs(d)*0.4 or np.linalg.norm(new-temp[-1]) < abs(d)*0.2:
-            continue
+        # if np.linalg.norm(new-temp[-1]) < abs(d)*0.4 or np.linalg.norm(new-temp[-2]) < abs(d)*0.4:
+        #    continue
         temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
     temp = iflong(temp)
@@ -105,7 +106,7 @@ def draw(data):
 def iflong(data):
     i = 0
     while i < data.shape[0]-1:
-        if np.linalg.norm(data[i+1, :]-data[i, :]) > 5*abs(d):
+        if np.linalg.norm(data[i+1, :]-data[i, :]) > 2*abs(d):
             new = np.array([(data[i+1, 0]+data[i, 0])/2,
                             (data[i+1, 1]+data[i, 1])/2])
             data = np.insert(data, i+1, new,  axis=0)
@@ -122,7 +123,7 @@ def ifwide(data, last):
         while j < last.shape[0]:
             if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:
                 data = np.delete(data, i, axis=0)
-                j -= 20
+                j -= 10
             else:
                 j += 1
         i += 1
@@ -147,23 +148,42 @@ def ifcross(data):
 
 
 def ifdivide(data):  # 判断区域划分
-    for i in range(data.shape[0]-1):
-        for j in range(i, data.shape[0]-1):
+    for i in range(data.shape[0]-2):
+        for j in range(i, data.shape[0]-2):
             x1 = data[i, 0]
             y1 = data[i, 1]
-            x2 = data[i+1, 0]
-            y2 = data[i+1, 1]
-            if math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d):
+            x2 = data[j, 0]
+            y2 = data[j, 1]
+            if math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 20:
                 v1 = data[i+2, :]-data[i, :]
                 v2 = data[j+2, :]-data[j, :]
                 if angle(v1)-angle(v2) > math.pi/2:
-                    return(1)
-    return(0)
+                    return(np.array([i, j]))
+    return(np.array([0, 0]))
 
 
-for m in range(20):
-    data = draw(data)
-    print(m)
+def area(data):
+    while True:
+        temp = data[-1]
+        if data[0].shape[0] < 10:
+            break
+        if temp.shape[0] < 30:
+            del data[len(data)-1]
+            continue
+        index = ifdivide(temp)  # 分割点序号
+        if index[0] == 0 and index[1] == 0:
+            data[-1] = draw(temp)
+            plt.show()
+        else:
+            data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
+            temp1 = temp[0:math.floor(index[0])+1, :]
+            temp2 = temp[math.floor(index[1]):temp.shape[0], :]
+            data[len(data)-2] = np.row_stack((temp1, temp2))
+    pass
+
+
+data = list([data])
+area(data)
 
 end = time.thread_time()
 print('Running time: %s Seconds' % (end-start))
