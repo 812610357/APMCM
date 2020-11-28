@@ -36,28 +36,23 @@
 \pagestyle{mainmatterstyle}
 \setcounter{page}{1}
 \section{Introduction}
-In order to indicate the origin of problems, the following background is worth mentioning.\cite{4}
-
-\begin{align*}
-  \int^2_1 x \mathrm{d} x
-\end{align*}
-
-\subsection{}
-\begin{align}
-  \sum_{i=0}^\infty x^n
-\end{align}
-1234
-\subsection{}
-
-\begin{align}
-  \int_0^{21} \sqrt{x} \, \mathrm{d}x \cdot \varphi
-\end{align}
-
-\subsection{}
+The sharpest knife, laser, has been widely used to mark specified 2D-compound curve graph. Efficiency is an important indicator for this craft. To maximize the efficiency, we need to make the hatch curves generated automatically and quickly by laser marking machine keep parallel to the boundary lines of the figures, and distribute evenly.\cite{4}
 
 
-\section{The Description of the Problem}
-\subsection{How do we approximate the whole course of ?}
+
+\subsection{Problem Restatement}
+  The curve used by laser etching has a certain width. In order to simplify the calculation, we approximate it to a one-dimensional curve, and set the spacing of the curve to achieve the filling effect. Taking into account the moving efficiency of the robotic arm in actual industrial production, the curve used to fill the graph must be as continuous as possible. Based on the above discussion, we can equate the problem as the optimal solution for filling a two-dimensional curve polygon with a continuous curve.
+
+
+\subsection{Previous Work}
+  In previous work, we have learned that there has been a work of depicting a vector diagram by calculating basic data through DSP. In the processing of bitmaps, due to the large storage space occupied by bitmap files, a small amount of pixel data is selected according to the set resolution during the processing of the marking software. Such processing greatly reduces the amount of marking data of the bitmap file and improves its marking speed. Increasing the resolution of the picture can improve the fineness of the graphic marking, but due to the limitation of the scanning speed, the marking time increases accordingly.
+
+
+\subsection{Problem Solving Strategies}
+
+
+\section{The Description of the algorithms}
+\subsection{How do we use algorithms to implement the whole process?}
 
 \begin{itemize}
   \item
@@ -66,8 +61,8 @@ In order to indicate the origin of problems, the following background is worth m
 \end{itemize}
 
 
-\subsection{How do we define the optimal configuration?}
-1) From the perspective of      :\par
+\subsection{The Reasonableness of approximating}
+1)           :\par
 2) From the perspective of the      :\par
 3) Compromise:
 
@@ -81,13 +76,7 @@ In order to indicate the origin of problems, the following background is worth m
 \end{itemize}
 
 
-\subsection{The differences in weights and sizes of}
-
-
-\subsection{What if there is no data available?}
-
-
-
+\subsection{Algorithmic Complexity}
 
 
 
