@@ -120,5 +120,6 @@
     ],
     "cSpell.enableFiletypes": [
         "bibtex"
-    ]
+    ],
+    "python.pythonPath": "C:\\Users\\ASUS\\anaconda3\\python.exe"
 }
