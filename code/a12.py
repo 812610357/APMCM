@@ -90,7 +90,8 @@ def draw(data):
         i += 1
     temp = np.delete(temp, 0, axis=0)
     temp = iflong(temp)
-    temp = ifcross(temp, data)
+    temp = ifcross(temp)
+    temp = ifwide(temp, data)
     plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=2)
     return(temp)
 
@@ -108,7 +109,7 @@ def iflong(data):
     return(data)
 
 
-def ifcross(data, last):
+def ifwide(data, last):
     i = 0
     while i < data.shape[0]:
         j = 0
@@ -122,7 +123,6 @@ def ifcross(data, last):
     return(data)
 
 
-'''
 def ifcross(data):
     j = 1
     i = 0
@@ -138,7 +138,6 @@ def ifcross(data):
                 j = 1
                 break
     return(data)
-'''
 
 
 def ifdivide(data):  # 判断区域划分
@@ -156,7 +155,7 @@ def ifdivide(data):  # 判断区域划分
     return(0)
 
 
-for m in range(20):
+for m in range(10):
     data = draw(data)
     print(m)
 
