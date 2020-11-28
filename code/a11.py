@@ -1,6 +1,6 @@
-from os import write
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.core.fromnumeric import argmax, argmin
 import pandas as pd
 import os
 import math
@@ -56,8 +56,7 @@ def drawborder(data):
             temp = np.row_stack((temp, new))
         i += 1
     temp = np.delete(temp, 0, axis=0)
-
-    plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=2)
+#    plt.plot(temp[:, 0], temp[:, 1], '-o', color='y', markersize=2)
     return(temp)
 
 
@@ -71,24 +70,23 @@ def getint(data):
         k = (y2-y1)/(x2-x1)  # 差分法取整点
         if y1//abs(d) < y2//abs(d):
             for j in range(1, math.floor(y2//abs(d)-y1//abs(d)+1)):
-                new[1] = (y1//abs(d)+j)*abs(d)
+                new[1] = round((y1//abs(d)+j)*abs(d), 1)
                 new[0] = (new[1]-y1)/k+x1
                 temp = np.row_stack((temp, new))
         else:
             if y1//abs(d) > y2//abs(d):
                 for j in range(0, math.floor(y1//abs(d)-y2//abs(d))):
-                    new[1] = (y1//abs(d)-j)*abs(d)
+                    new[1] = round((y1//abs(d)-j)*abs(d), 1)
                     new[0] = (new[1]-y1)/k+x1
                     temp = np.row_stack((temp, new))
-    temp = np.insert(temp, temp.shape[0], values=temp[0, :], axis=0)
     temp = np.delete(temp, 0, axis=0)
-    plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
+#    plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
     return(temp)
 
 
-def getline(data):
+def getdline(data):
     temp = 0
-    line = np.array([0, 0, 0])
+    dline = np.array([0, 0, 0])
     for i in range(1, data.shape[0]-2):
         k = 0
         if findex(data, i) == 1:
@@ -112,28 +110,28 @@ def getline(data):
                         k += 1
                     break
             if k == 3:
-                line = np.array([data[i, 1], i, temp])
-                print(line)
-                dots = np.array([data[math.floor(line[1]), :],
-                                 data[math.floor(line[2]), :]])
+                dline = np.array([data[i, 1], i, temp])
+                print(dline)
+                dots = np.array([data[math.floor(dline[1]), :],
+                                 data[math.floor(dline[2]), :]])
                 plt.plot(dots[:, 0], dots[:, 1], '--o',
                          color='g', markersize=2)
-                return(line)
-    print(line)
-    return(line)
+                return(dline)
+    print(dline)
+    return(dline)
 
 
 def divide(data):
     i = 0
     while True:
-        line = getline(data[i])
-        if line[1] == 0 and line[2] == 0:
+        dline = getdline(data[i])
+        if dline[1] == 0 and dline[2] == 0:
             i += 1
         else:
             temp = data[i]
-            data.append(temp[math.floor(line[1]): math.floor(line[2])+1, :])
-            temp1 = temp[0:math.floor(line[1])+1, :]
-            temp2 = temp[math.floor(line[2]):temp.shape[0], :]
+            data.append(temp[math.floor(dline[1]): math.floor(dline[2])+1, :])
+            temp1 = temp[0:math.floor(dline[1])+1, :]
+            temp2 = temp[math.floor(dline[2]):temp.shape[0], :]
             data[i] = np.row_stack((temp1, temp2))
             continue
         if i == len(data):
@@ -142,7 +140,7 @@ def divide(data):
 
 
 def writecsv(data):
-    for i in range(len(data)-1):
+    for i in range(len(data)):
         area = data[i]
         dataframe = pd.DataFrame(data={'x': area[:, 0], 'y': area[:, 1]})
         dataframe.to_csv(f".\code\\area{i}.csv",
@@ -152,10 +150,28 @@ def writecsv(data):
 
 def drawline(data):
     length = 0  # 画线总长
-    for i in range(len(data)-1):
+    cl = ['r', 'g']
+    for i in range(len(data)):
+        line = np.array([0, 0])
         area = data[i]
-        maxy = max(area[:, 1])
-        miny = min(area[:, 1])
+        maxy = round(max(area[:, 1]), 1)
+        miny = round(min(area[:, 1]), 1)
+        j = miny
+        while j <= maxy:
+            index = (np.where(area == j))[0]
+            temp = area[index, 0]
+            if round(j/abs(d)) % 2:
+                line = np.row_stack((line, [j, min(temp)]))
+                temp = np.delete(temp, argmin(temp))
+                line = np.row_stack((line, [j, min(temp)]))
+            else:
+                line = np.row_stack((line, [j, max(temp)]))
+                temp = np.delete(temp, argmax(temp))
+                line = np.row_stack((line, [j, max(temp)]))
+            j = round(j + abs(d), 1)
+        line = np.delete(line, 0, axis=0)
+        plt.plot(line[:, 1], line[:, 0], '-', color=cl[i % 2])
+        i += 1
     pass
 
 
@@ -164,7 +180,7 @@ data = getint(data)
 data = list([data])
 data = divide(data)
 writecsv(data)
-# drawline(data)
+drawline(data)
 
 
 '''
@@ -174,10 +190,10 @@ data.append(np.array(pd.read_csv(".\code\\area1.csv", header=0)))
 data.append(np.array(pd.read_csv(".\code\\area2.csv", header=0)))
 data.append(np.array(pd.read_csv(".\code\\area3.csv", header=0)))
 data.append(np.array(pd.read_csv(".\code\\area4.csv", header=0)))
+data.append(np.array(pd.read_csv(".\code\\area5.csv", header=0)))
 drawline(data)
 '''
 
-# plt.plot((data[0])[:, 0], (data[0])[:, 1], '-o',color='y', markersize=2)
 
 end = time.thread_time()
 print('Running time: %s Seconds' % (end-start))
