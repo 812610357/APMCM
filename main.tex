@@ -165,20 +165,22 @@ The signs and definitions are mostly generated from queuing theory.
   \item
 \end{itemize}
 \section{Future Work}
-\subsection{Another model}
-\subsubsection{The limitations of queuing theory}
+\subsection{Ideas to solve existing problems}
+Zigzag, as the most common hatching method at present, has many sharp turns. For shapes with complex borders or hollow, this disadvantage will be very obvious.The contour parallel algorithm can avoid too many sharp turns, but it leads to more contours and the contours are not connected. For the problems of these two hatching methods, we can use the Fermat spiral filling used in 3D printing to solve it. The Fermat spiral consists of two intertwined sub-helices, one inward and the other outward. The Fermat spiral has three advantages:
+1) Similar to the contour parallel hatch, the Fermat spiral only has a sharp turn at the center.
+2) Some Fermat spirals can continuously fill the 2D area; traditional spirals are either inward or outward, and Fermat spirals are both inward and outward, and can meet at the boundary.
+3) To facilitate the connection between the spirals, the start and end nodes of the Fermat spiral can be selected arbitrarily at the boundary.
+
+
+
+\subsection{Optimization of performance and efficiency}
+
+
+\subsection{Realization of practical industrial applications}
 
 
 
 
-\subsubsection{}
-
-
-\subsubsection{}
-
-
-
-\subsubsection{}
 
 
 
