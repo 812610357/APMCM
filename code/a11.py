@@ -8,7 +8,7 @@ import time
 start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
-d = -0.1
+d = -1
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 
@@ -113,23 +113,28 @@ def getline(data):
             if k == 3:
                 line = np.array([data[i, 1], i, temp])
                 print(line)
+#                dots = np.array([data[math.floor(line[1]), :],
+#                                 data[math.floor(line[2]), :]])
+#                plt.plot(dots[:, 0], dots[:, 1], '--o', color='g', markersize=2)
                 return(line)
-                break
     print(line)
     return(line)
 
 
 def divide(data):
     i = 0
-    while i:
+    while True:
         line = getline(data[i])
-        if line == [0, 0, 0]:
+        if line[1] == 0 and line[2] == 0:
             i += 1
         else:
-            list.append(data[i][line[1], line[2]])
-            data = np.delete(data[i], [line[1]+1, line[2]-1])
+            temp = data[i]
+            data.append(temp[math.floor(line[1]): math.floor(line[2])+1, :])
+            temp1 = temp[0:math.floor(line[1])+1, :]
+            temp2 = temp[math.floor(line[2]):temp.shape[0], :]
+            data[i] = np.row_stack((temp1, temp2))
             continue
-        if i ==len(data)-1:
+        if i == len(data):
             break
     return(data)
 
@@ -142,6 +147,8 @@ data = drawborder(data)
 data = getint(data)
 data = list([data])
 data = divide(data)
+
+plt.plot((data[0])[:, 0], (data[0])[:, 1], '-o',color='y', markersize=2)
 
 end = time.thread_time()
 print('Running time: %s Seconds' % (end-start))
