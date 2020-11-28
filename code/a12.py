@@ -75,19 +75,25 @@ def draw(data):
         #               round(data[i+1, 1]-data[i, 1], 5)])
         # v2 = np.array([round(data[i+2, 0]-data[i+1, 0], 5),
         #               round(data[i+2, 1]-data[i+1, 1], 5)])
-        if inangle(v1, v2):
+        if 0 < inangle(v1, v2) < 0.9*math.pi:
             u = d/(math.sin(inangle(v1, v2)))
             if (angle(v2) > angle(v1) and not(angle(v2) > math.pi/2 and angle(v1) < -math.pi/2)) or (angle(v2) < -math.pi/2 and angle(v1) > math.pi/2):
                 new = data[i+1, :]+(unit(v2)-unit(v1))*u
             else:
                 new = data[i+1, :]-(unit(v2)-unit(v1))*u
         else:
-            if angle(v1) > 0:
-                new = data[i+1, :] + unit([v1[1], -v1[0]])*abs(d)
+            if inangle(v1, v2) == 0:
+                if angle(v1) > 0:
+                    new = data[i+1, :] + unit([v1[1], -v1[0]])*abs(d)
+                else:
+                    new = data[i+1, :] - unit([-v1[1], v1[0]])*abs(d)
             else:
-                new = data[i+1, :] - unit([-v1[1], v1[0]])*abs(d)
-        temp = np.row_stack((temp, new))
+                i += 1
+                continue
         i += 1
+        if np.linalg.norm(new-temp[-2]) < abs(d)*0.4 or np.linalg.norm(new-temp[-1]) < abs(d)*0.2:
+            continue
+        temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
     temp = iflong(temp)
     temp = ifcross(temp)
@@ -99,7 +105,7 @@ def draw(data):
 def iflong(data):
     i = 0
     while i < data.shape[0]-1:
-        if np.linalg.norm(data[i+1, :]-data[i, :]) > 2*abs(d):
+        if np.linalg.norm(data[i+1, :]-data[i, :]) > 5*abs(d):
             new = np.array([(data[i+1, 0]+data[i, 0])/2,
                             (data[i+1, 1]+data[i, 1])/2])
             data = np.insert(data, i+1, new,  axis=0)
@@ -132,11 +138,11 @@ def ifcross(data):
             v1 = data[i+1, :]-data[i, :]
             v2 = data[i+2, :]-data[i+1, :]
             v3 = data[i+3, :]-data[i+2, :]
-            i += 1
             if inangle(v1, v2)+inangle(v2, v3) > math.pi:
-                data = np.delete(data, [i, i+1], axis=0)
+                data = np.delete(data, [i+1, i+2], axis=0)
                 j = 1
                 break
+            i += 1
     return(data)
 
 
@@ -155,7 +161,7 @@ def ifdivide(data):  # 判断区域划分
     return(0)
 
 
-for m in range(10):
+for m in range(20):
     data = draw(data)
     print(m)
 
