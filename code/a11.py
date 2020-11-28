@@ -119,9 +119,19 @@ def getline(data):
     return(line)
 
 
-def divide(data, line):
-
-    pass
+def divide(data):
+    i = 0
+    while i:
+        line = getline(data[i])
+        if line == [0, 0, 0]:
+            i += 1
+        else:
+            list.append(data[i][line[1], line[2]])
+            data = np.delete(data[i], [line[1]+1, line[2]-1])
+            continue
+        if i ==len(data)-1:
+            break
+    return(data)
 
 
 def getborder():
@@ -130,8 +140,8 @@ def getborder():
 
 data = drawborder(data)
 data = getint(data)
-line = getline(data)
-data = divide(data, line)
+data = list([data])
+data = divide(data)
 
 end = time.thread_time()
 print('Running time: %s Seconds' % (end-start))
