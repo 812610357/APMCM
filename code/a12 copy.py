@@ -79,7 +79,7 @@ def draw(data):
             else:
                 new = data[i+1, :]-(unit(v2)-unit(v1))*u
             for j in range(0, data.shape[0]-2):
-                if np.linalg.norm(new-data[j, :]) < abs(d)*0.99:
+                if np.linalg.norm(new-data[j, :]) < abs(d)*0.999:
                     k = 1
                     break
             # if np.linalg.norm(new-data[i+1, :]) > abs(d)*5 or (temp.shape[0] > 1 and np.linalg.norm(new-temp[temp.shape[0]-1]) < abs(d)*0.1):
@@ -93,26 +93,22 @@ def draw(data):
             times -= 1
         i += 1
     temp = np.delete(temp, 0, axis=0)
-    temp = ifcross(temp)
-    plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=2)
-    return(temp)
-
-
-def ifcross(data):
     j = 1
     i = 0
     while j:
         j = 0
-        while i < data.shape[0]-3:
-            v1 = data[i+1, :]-data[i, :]
-            v2 = data[i+2, :]-data[i+1, :]
-            v3 = data[i+3, :]-data[i+2, :]
+        while i < temp.shape[0]-3:
+            v1 = temp[i+1, :]-temp[i, :]
+            v2 = temp[i+2, :]-temp[i+1, :]
+            v3 = temp[i+3, :]-temp[i+2, :]
             i += 1
             if inangle(v1, v2)+inangle(v2, v3) > math.pi:
-                data = np.delete(data, [i, i+1], axis=0)
+                temp = np.delete(temp, [i, i+1], axis=0)
                 j = 1
                 break
-    return(data)
+
+    plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=2)
+    return(temp)
 
 
 def ifdivide(data):  # 判断区域划分
@@ -130,7 +126,7 @@ def ifdivide(data):  # 判断区域划分
     return(0)
 
 
-for m in range(8):
+for m in range(3):
     data = draw(data)
     print(m)
 
