@@ -72,7 +72,7 @@ def draw(data):
         k = 0
         v1 = data[i+1, :]-data[i, :]
         v2 = data[i+2, :]-data[i+1, :]
-        if 1:  # roc(v1, v2) > abs(d) and inangle(v1, v2) < 0.9*math.pi:
+        if inangle(v1, v2) < 0.9*math.pi: # roc(v1, v2) > abs(d)
             u = d/(math.sin(inangle(v1, v2)))
             if (angle(v2) > angle(v1) and not(angle(v2) > math.pi/2 and angle(v1) < -math.pi/2)) or (angle(v2) < -math.pi/2 and angle(v1) > math.pi/2):
                 new = data[i+1, :]+(unit(v2)-unit(v1))*u
