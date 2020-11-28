@@ -64,10 +64,8 @@ For the contour parallel hatch, we will iterate the steps of indentation. In the
 
 
 \subsection{The Reasonableness of approximating}
-1)           :\par
-2) From the perspective of the      :\par
-3) Compromise:
-
+\subsubsection{Rounding of data point coordinates}
+\subsubsection{}
 \subsection{The local optimization and the overall optimization}
 
 
@@ -172,13 +170,22 @@ Zigzag, as the most common hatching method at present, has many sharp turns. For
 3) To facilitate the connection between the spirals, the start and end nodes of the Fermat spiral can be selected arbitrarily at the boundary.
 \subsection{Optimization of performance and efficiency}
 \subsubsection{Reducing the idling of the robotic arm}
-In actual industrial applications, in addition to the running time of the algorithm, we must consider another time cost, the efficiency of the robot's movement. In the zigzag incubation, according to the complexity of the graphics, we have to partition them. This results in a certain distance between the start and end of each curve. It takes a certain amount of time for the robot arm to move between these. In order to reduce this waste, we need to make a more reasonable design for the partition and the angle between the parallel line and the x-axis. In the same way, there will be multiple converging centers in contour hatching. Reduce the number of converging centers as much as possible, which means reducing the blank movement time of the robotic arm.
+In actual industrial applications, in addition to the running time of the algorithm, we must consider another time cost, the efficiency of the robot's movement. For the zigzag hatch, according to the complexity of the graphics, we have to partition them. This results in a certain distance between the start and end of each curve. It takes a certain amount of time for the robot arm to move between them. In order to reduce this waste, we need to make a more reasonable design for the partition and the angle between the parallel line and the x-axis. In the same way, there will be multiple converging centers in contour hatching. Reducing the number of converging centers as much as possible means reducing the blank movement time of the robotic arm.
 
 \subsubsection{Reducing the amount of data}
 In the actual laser marking process, the original image often contains a large number of data points. To delete redundant or isolated data points can shorten the running time of the program.
-\subsubsection{Reducing the time complexity of the algorithm}
-
-
+\subsubsection{Program optimization}
+1)Algorithm optimization:
+An excellent algorithm can reduce the complexity of the algorithm by several orders of magnitude, and its average time-consuming is generally less than other algorithms with high complexity
+There is another situation where the algorithm itself is relatively complicated, its time complexity is difficult to reduce, and its efficiency does not meet the requirements. The measures that can be taken are: maintaining the effect of the algorithm to improve efficiency, and discarding part of the effect in exchange for a certain efficiency.
+2)Code optimization:
+a. Avoid multiplication (division) and redundant calculations inside the loop
+b. Avoid too many dependencies and jumps inside the loop
+c. Convert floating-point operations to integer operations
+d. Exchange space for time
+e. Pre-allocated memory
+3)Instruction optimization
+Instruction optimization generally uses a specific instruction set to quickly implement certain operations. Another core idea of instruction optimization is packed operations.
 
 
 
