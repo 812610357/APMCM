@@ -151,7 +151,6 @@ def writecsv(data):
 def drawline(data):
     length = 0  # 画线总长
     times = 0  # 平行线数量
-    cl = ['r', 'g']
     for i in range(len(data)):
         line = np.array([0, 0])
         area = data[i]
@@ -171,7 +170,7 @@ def drawline(data):
                 line = np.row_stack((line, [j, max(temp)]))
             j = round(j + abs(d), 1)
         line = np.delete(line, 0, axis=0)
-        plt.plot(line[:, 1], line[:, 0], '-', color=cl[i % 2])
+        plt.plot(line[:, 1], line[:, 0], '-', color='r')
         times = times+int(line.shape[0]/2)
         for j in range(line.shape[0]-1):
             length = length + \
