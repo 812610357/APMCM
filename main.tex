@@ -203,8 +203,8 @@ e. Pre-allocated memory
 3)Instruction optimization
 Instruction optimization generally uses a specific instruction set to quickly implement certain operations. Another core idea of instruction optimization is packed operations.
 
-
-
+\subsubsection{Multi-threaded operation}
+Due to the limitation of single-threaded, our code can only run in a single thread. However, we found that after partitioning, the iteration of each region, the correspondence between points, and the detection of each point are relatively independent, which makes it possible for some programs to run in multiple threads. Through multi-threaded processing, we can greatly reduce the running time of the program, thereby improving its performance.
 
 
 
