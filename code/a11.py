@@ -143,7 +143,7 @@ def writecsv(data):
     for i in range(len(data)):
         area = data[i]
         dataframe = pd.DataFrame(data={'x': area[:, 0], 'y': area[:, 1]})
-        dataframe.to_csv(f".\code\\area{i}.csv",
+        dataframe.to_csv(f".\code\\zigzag{i}.csv",
                          index=False, mode='w', sep=',')
     pass
 

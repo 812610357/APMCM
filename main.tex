@@ -329,7 +329,7 @@ Due to the limitation of single-Progress, our code can only run in a single proc
   start = time.thread_time()
   
   data = np.array(pd.read_csv(".\code\graph1.csv", header=2))   
-  d = -0.1
+  d = -0.1  # -0.1 or 1
   plt.axis("equal")
   plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
   dots = 0
@@ -530,7 +530,7 @@ Due to the limitation of single-Progress, our code can only run in a single proc
   
   data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
   data = data0  
-  d = -1  
+  d = -0.1  # -0.1 or -1
   plt.axis("equal")
   plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
   dots = 0

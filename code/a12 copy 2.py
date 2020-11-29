@@ -12,6 +12,7 @@ d = -0.1  # 精度
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 dots = 0
+times = 0
 
 
 def unit(v):  # 单位化
@@ -57,6 +58,7 @@ def draw(data):  # 画等高线
     temp = iflong(temp)  # 同级点间距控制
     temp = ifcross(temp)  # 交叉控制
     temp = ifwide(temp, data)  # 与上一级间距控制
+    writecsv(temp)
     plt.plot(temp[:, 0], temp[:, 1], '-', color='r')
     return(temp)
 
@@ -123,7 +125,7 @@ def ifdivide(data):  # 判断区域划分
 
 def drawline(data):  # 判断是否需要分割
     length = 0
-    times = 0
+    global times
     while True:
         temp = data[-1]
         if data[0].shape[0] < 10:
@@ -134,9 +136,9 @@ def drawline(data):  # 判断是否需要分割
             continue
         index = ifdivide(temp)  # 分割点序号
         if index[0] == 0 and index[1] == 0:
+            times += 1
             data[-1] = draw(temp)
             print(times)
-            times += 1
             for j in range(data[-1].shape[0]-1):
                 length = length + \
                     math.sqrt((data[-1][j+1, 0]-data[-1][j, 0])**2 +
@@ -151,6 +153,14 @@ def drawline(data):  # 判断是否需要分割
             temp2 = temp[math.floor(index[1]):temp.shape[0], :]
             data[-2] = np.row_stack((temp1, temp2))
     return([length, times])
+
+
+def writecsv(data):
+    global times
+    dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
+    dataframe.to_csv(f".\code\\contour{times}.csv",
+                     index=False, mode='w', sep=',')
+    pass
 
 
 data = list([data])
