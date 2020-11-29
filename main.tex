@@ -44,6 +44,9 @@ The sharpest knife, laser, has been widely used to mark specified 2D-compound cu
 The curve used by laser etching has a certain width. In order to simplify the calculation, we approximate it to a one-dimensional curve, and set the spacing of the curve to achieve the filling effect. Taking into account the moving efficiency of the robotic arm in actual industrial production, the curve used to fill the graph must be as continuous as possible. Based on the above discussion, we can equate the problem as the optimal solution for filling a two-dimensional curve polygon with a continuous curve.
 
 
+We must be clear that the zigzag hatch mentioned in the article allows the curve to be broken, but does not allow the curve to be broken at each line at the boundary, which is different from the parallel scanning hatch commonly used in the industry.
+
+
 \subsection{Previous Work}
 In previous work, we have learned that there has been a work of depicting a vector diagram by calculating basic data through DSP. In the processing of bitmaps, due to the large storage space occupied by bitmap files, a small amount of pixel data is selected according to the set resolution during the processing of the marking software. Such processing greatly reduces the amount of marking data of the bitmap file and improves its marking speed. Increasing the resolution of the picture can improve the fineness of the graphic marking, but due to the limitation of the scanning speed, the marking time increases accordingly.
 
@@ -88,6 +91,12 @@ Since the hatching boundary is required to have a certain distance from the grap
 
 
 For non-convex polygons, we need to use horizontal straight lines to divide them and find the extreme points of the vertical axis in the contour sequence. If a horizontal straight line crosses this extreme point and crosses the contour on both sides of the extreme point at the same time, we take this point as the starting point of the dividing line, take the point in front of the sequence of the two intersection points as the end point, and split the contour into two closed areas. Dividing the formed areas as above, we can obtain multiple area, and do zigzag hatching in these areas.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=8cm]{e}
+  \caption{\CJK{UTF8}{gbsn}{Schematic diagram of segmentation method}}
+\end{figure}
 
 
 \subsection{The Reasonableness of approximating}
@@ -139,6 +148,7 @@ Due to the limitation of time and calculation conditions, we have not been able 
 \subsubsection{The direction parallel hatch}
 
  Like the single connected domain, the multiply-connected domain should also be divided into areas in the zigzag hatch. For example, there is a contour line C0, and other contour lines C1, C2... we should take the extreme value of each contour line in the vertical axis direction, and make a horizontal line through each extreme value point. If the number of intersection points is the same on its both sides, the point is confirmed as the starting point of a dividing line, and the first focus of the front of the sequence is the end of the dividing line. Just like the single connected domain, we can get several regions, and then fill these regions with zigzag lines.
+
 
 \subsubsection{The contour parallel hatch}
 
