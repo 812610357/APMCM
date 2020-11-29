@@ -8,9 +8,10 @@ start = time.thread_time()
 
 data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
 data = data0  # 从csv文件获取数据
-d = -1  # 精度
+d = -0.1  # 精度
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
+dots = 0
 
 
 def unit(v):  # 单位化
@@ -26,6 +27,7 @@ def inangle(v1, v2):  # 向量夹角
 
 
 def draw(data):  # 画线
+    global dots
     data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
     data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
     temp = np.array([0, 0])
@@ -50,6 +52,7 @@ def draw(data):  # 画线
                 continue
         i += 1
         temp = np.row_stack((temp, new))
+        dots += 1
     temp = np.delete(temp, 0, axis=0)
     temp = iflong(temp)  # 同级点间距控制
     temp = ifcross(temp)  # 交叉控制
@@ -156,6 +159,7 @@ data = drawline(data)
 end = time.thread_time()
 print('Length of curve: %s mm' % data[0])
 print('Number of turns: %s' % data[1])
+print('Number of dots: %s' % dots)
 print('Running time:    %s Seconds' % (end-start))
 
 plt.show()

@@ -4,6 +4,7 @@ import pandas as pd
 import math
 import time
 import threading
+import multiprocessing
 
 start = time.thread_time()
 
@@ -14,6 +15,7 @@ plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 list = list([])
 times = 0
+length = 0
 
 
 def unit(v):  # 单位化
@@ -74,7 +76,20 @@ def iflong(data):  # 同级点间距控制
     return(data)
 
 
-def ifwide(data, last):  # 与上一级间距控制
+def district(data, last):
+    global list
+    max = multiprocessing.cpu_count()
+    n = data.shape[0]/max
+    for i in range(max-1):
+        list[i] = [data[n*i:n*(i+1)]]
+        threading.Thread(target=ifwide, args=(list[i], last, i,)).start()
+    list[max-1] = [data[n*i:n*(i+1)]]
+    threading.Thread(target=ifwide, args=(list[i], last, i,)).start()
+    pass
+
+
+def ifwide(data, last, k):  # 与上一级间距控制
+    global list
     i = 0
     while i < data.shape[0]:  # 遍历该级所有数据
         j = 0
@@ -90,7 +105,8 @@ def ifwide(data, last):  # 与上一级间距控制
             else:
                 j += 1
         i += 1
-    return(data)
+    list[k] = [data]
+    pass
 
 
 def ifcross(data):  # 交叉控制
@@ -150,8 +166,8 @@ def drawline(data):
 data = drawline(data)
 
 end = time.thread_time()
-print('Length of curve: %s mm' % data[0])
-print('Number of turns: %s' % data[1])
+print('Length of curve: %s mm' % length)
+print('Number of turns: %s' % times)
 print('Running time:    %s Seconds' % (end-start))
 
 plt.show()

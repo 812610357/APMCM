@@ -9,9 +9,10 @@ import time
 start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
-d = -0.1
+d = -1
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
+dots = 0
 
 
 def findex(data, i):  # 极值返回1
@@ -149,6 +150,7 @@ def writecsv(data):
 
 
 def drawline(data):
+    global dots
     length = 0  # 画线总长
     times = 0  # 平行线数量
     for i in range(len(data)):
@@ -176,6 +178,7 @@ def drawline(data):
             length = length + \
                 math.sqrt((line[j+1, 0]-line[j, 0])**2 +
                           (line[j+1, 1]-line[j, 1])**2)
+            dots += 1
         i += 1
     return([length, times])
 
@@ -190,6 +193,7 @@ data = drawline(data)
 end = time.thread_time()
 print('Length of curve:         %s mm' % data[0])
 print('Number of parallel line: %s' % data[1])
+print('Number of dots: %s' % dots)
 print('Running time:            %s Seconds' % (end-start))
 
 plt.show()
