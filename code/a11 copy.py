@@ -139,12 +139,10 @@ def divide(data):  # 获得分割区域，并导入序列
     return(data)
 
 
-def writecsv(data):
-    for i in range(len(data)):
-        area = data[i]
-        dataframe = pd.DataFrame(data={'x': area[:, 0], 'y': area[:, 1]})
-        dataframe.to_csv(f".\code\\zigzag{i+1}.csv",
-                         index=False, mode='w', sep=',')
+def writecsv(data, times):
+    dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
+    dataframe.to_csv(f".\code\\zigzag{times}.csv",
+                     index=False, mode='w', sep=',')
     pass
 
 
@@ -171,7 +169,9 @@ def drawline(data):  # 画平行线
                 line = np.row_stack((line, [j, max(temp)]))
             j = round(j + abs(d), 1)
         line = np.delete(line, 0, axis=0)
-        plt.plot(line[:, 1], line[:, 0], '-', color='r')
+        line = np.column_stack((line[:, 1], line[:, 0]))
+        writecsv(line, times)
+        plt.plot(line[:, 0], line[:, 1], '-', color='r')
         times = times+int(line.shape[0]/2)
         for j in range(line.shape[0]-1):
             length = length + \
@@ -186,7 +186,6 @@ data = drawborder(data)
 data = getint(data)
 data = list([data])
 data = divide(data)
-writecsv(data)
 data = drawline(data)
 
 end = time.thread_time()
