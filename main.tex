@@ -160,6 +160,8 @@ When the accuracy is $1mm$, the total length of the curve is $985.26mm$, the num
   \caption{\CJK{UTF8}{gbsn}{contour parallel detail hatching with $1mm$ accuracy}}
 \end{figure}
 
+Reducing the same accuracy, the algorithm takes significantly longer time. At low precision, some lines overlap. Due to the limitation of the initial data volume, we must add a certain number of points to ensure the curve is closed, which leads to the generation of blanks at the smaller radius of curvature. This effect is more obvious under high precision.
+
 \subsubsection{Comparison of two hatch methods}
 
 \subsection{hatch of multiply-connected domain}
