@@ -34,7 +34,7 @@ def inangle(v1, v2):  # 向量夹角
     return(math.acos(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2))))
 
 
-def drawborder(data):
+def drawborder(data):  # 内缩一次
     data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
     data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
     temp = np.array([0, 0])
@@ -61,14 +61,14 @@ def drawborder(data):
     return(temp)
 
 
-def getint(data):
+def getint(data):  # 按精度离散化
     temp = new = np.array([0, 0.])
     for i in range(data.shape[0]-1):
         x1 = data[i, 0]
         y1 = data[i, 1]
         x2 = data[i+1, 0]
         y2 = data[i+1, 1]
-        k = (y2-y1)/(x2-x1)  # 差分法取整点
+        k = (y2-y1)/(x2-x1)  # 差分法
         if y1//abs(d) < y2//abs(d):
             for j in range(1, math.floor(y2//abs(d)-y1//abs(d)+1)):
                 new[1] = round((y1//abs(d)+j)*abs(d), 1)
@@ -85,7 +85,7 @@ def getint(data):
     return(temp)
 
 
-def getdline(data):
+def getdline(data):  # 确定分割线，返回分割点序号
     temp = 0
     dline = np.array([0, 0, 0])
     for i in range(1, data.shape[0]-2):
@@ -122,7 +122,7 @@ def getdline(data):
     return(dline)
 
 
-def divide(data):
+def divide(data):  # 获得分割区域，并导入序列
     i = 0
     while True:
         dline = getdline(data[i])
@@ -149,7 +149,7 @@ def writecsv(data):
     pass
 
 
-def drawline(data):
+def drawline(data):  # 画平行线
     global dots
     length = 0  # 画线总长
     times = 0  # 平行线数量

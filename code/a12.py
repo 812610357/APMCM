@@ -26,7 +26,7 @@ def inangle(v1, v2):  # 向量夹角
     return(math.acos(round(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2)), 9)))
 
 
-def draw(data):  # 画线
+def draw(data):  # 画等高线
     global dots
     data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
     data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
@@ -121,7 +121,7 @@ def ifdivide(data):  # 判断区域划分
     return(np.array([0, 0]))
 
 
-def drawline(data):
+def drawline(data):  # 判断是否需要分割
     length = 0
     times = 0
     while True:

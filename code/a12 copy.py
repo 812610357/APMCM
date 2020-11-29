@@ -3,16 +3,9 @@ import numpy as np
 import pandas as pd
 import math
 import time
-import threading
-import multiprocessing
+import multiprocessing as mp
 
-start = time.thread_time()
-
-data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
-data = data0  # 从csv文件获取数据
 d = -0.1  # 精度
-plt.axis("equal")
-plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 sheet = list([])
 times = 0
 length = 0
@@ -78,24 +71,29 @@ def iflong(data):  # 同级点间距控制
 
 def district(data, last):
     global sheet
+    q = mp.Queue()
+    jobs = []
     sheet = list([])
-    max = multiprocessing.cpu_count()
-    if data.shape[0] / max < 100:
-        max = int(data.shape[0]/100)
+    max = mp.cpu_count()
+    if data.shape[0] / max < 300:
+        max = int(data.shape[0]/300)
     n = int(data.shape[0]/max)
     for i in range(max-1):
         sheet.append(data[n*i:n*(i+1)])
-        threading.Thread(target=ifwide, args=(sheet[i], last, i,)).start()
-    sheet.append(data[max-1:data.shape[0]])
-    threading.Thread(target=ifwide, args=(sheet[max-1], last, max-1,)).start()
-    output = np.array(sheet[0])
-    for i in range(1, max):
-        output = np.row_stack((output, sheet[i]))
+        p = mp.Process(target=ifwide, args=(sheet[i], last, q))
+        jobs.append(p)
+        p.start()
+    sheet.append(data[n*(max-1):data.shape[0]])
+    p = mp.Process(target=ifwide, args=(sheet[max-1], last, q))
+    jobs.append(p)
+    p.start()
+    for p in jobs:
+        p.join()
+    output = [q.get() for j in jobs]
     return(output)
 
 
-def ifwide(data, last, k):  # 与上一级间距控制
-    global sheet
+def ifwide(data, last, q):  # 与上一级间距控制
     i = 0
     while i < data.shape[0]:  # 遍历该级所有数据
         j = 0
@@ -111,8 +109,7 @@ def ifwide(data, last, k):  # 与上一级间距控制
             else:
                 j += 1
         i += 1
-    sheet[k] = [data]
-    pass
+    q.put(data)
 
 
 def ifcross(data):  # 交叉控制
@@ -162,18 +159,28 @@ def drawline(data):
         else:
             new = temp[math.floor(index[0])+1: math.floor(index[1]), :]
             new = np.row_stack((new, new[0, :]))
-            threading.Thread(target=drawline, args=(new,)).start()
+            mp.Process(target=drawline, args=(new,)).start()
             temp1 = temp[0:math.floor(index[0])+1, :]
             temp2 = temp[math.floor(index[1]):temp.shape[0], :]
             data = np.row_stack((temp1, temp2))
     pass
 
 
-data = drawline(data)
+if __name__ == '__main__':
+    start = time.thread_time()
 
-end = time.thread_time()
-print('Length of curve: %s mm' % length)
-print('Number of turns: %s' % times)
-print('Running time:    %s Seconds' % (end-start))
+    data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
+    data = data0  # 从csv文件获取数据
+    plt.axis("equal")
+    plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 
-plt.show()
+    q = mp.Queue()
+    jobs = []
+    data = drawline(data)
+
+    end = time.thread_time()
+    print('Length of curve: %s mm' % length)
+    print('Number of turns: %s' % times)
+    print('Running time:    %s Seconds' % (end-start))
+
+    plt.show()
