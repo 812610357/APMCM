@@ -69,13 +69,11 @@ The applicable objects of the algorithms in this paper are most of the two-dimen
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=7cm]{v} 
+  \includegraphics[width=12cm]{v}
   \caption{\CJK{UTF8}{gbsn}{The way of vector translation}}
 \end{figure}
 
-
 The method we use is to form two vectors through two points before and after a certain point. The straight line where the two vectors are located is translated by one precision unit into the graph, and the resulting intersection point is the mapping of the point of the new path generated inward by this point. To get the coordinates of the new point, we will unitize the vectors formed by the original three points, multiply the precision, and divide by the sine of the angle of the vector. Then we add the two vectors after processing to obtain the vector needed for transformation. The coordinates of the original point are added to the transformation vector to obtain the coordinates of the new point. According to the data given in the question, the order of the points on the outer boundary is counterclockwise. To ensure that the newly generated points are inside the original graphics, all new points must be guaranteed to be on the right side of the vector where their origin is located.
-
 
 
 The argument and the angle between the two vectors are our basis for judgment. When this angle protrudes outside the image, the newly generated point appears inside the angle. When this angle is sunken inside the image, we add a negative sign to the transformation vector to make it inverted. Then the newly generated point appears on the outside of the angle. Through this algorithm, we can make both convex and non-convex polygons shrink inward. Performing this step in a loop, we can get the coordinate data of a new set of points. This set of data will not only be used to generate a layer of contours, but also will be used to generate the next set of lattices.
@@ -94,7 +92,7 @@ For non-convex polygons, we need to use horizontal straight lines to divide them
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=8cm]{e}
+  \includegraphics[width=12cm]{e}
   \caption{\CJK{UTF8}{gbsn}{Schematic diagram of segmentation method}}
 \end{figure}
 
@@ -122,7 +120,7 @@ The following is the processing result of our algorithm on the given data.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=5cm]{zigzag0.1mm} \quad \includegraphics[width=5cm]{zigzag1mm}
+  \includegraphics[width=7cm]{zigzag0.1mm} \quad \includegraphics[width=7cm]{zigzag1mm}
   \caption{\CJK{UTF8}{gbsn}{zigzag hatching with 0.1mm accuracy}}
   \caption{\CJK{UTF8}{gbsn}{zigzag hatching with 1mm accuracy}}
 \end{figure}
@@ -134,7 +132,7 @@ When the accuracy is 1mm, the total length of the curve is 918.98mm, the number 
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=5cm]{contour0.1mm} \quad \includegraphics[width=5cm]{contour1mm}
+  \includegraphics[width=7cm]{contour0.1mm} \quad \includegraphics[width=7cm]{contour1mm}
   \caption{\CJK{UTF8}{gbsn}{zigzag hatching with 0.1mm accuracy}}
   \caption{\CJK{UTF8}{gbsn}{zigzag hatching with 1mm accuracy}}
 \end{figure}
@@ -150,7 +148,7 @@ Due to the limitation of time and calculation conditions, we have not been able 
 
 \subsubsection{The direction parallel hatch}
 
- Like the single connected domain, the multiply-connected domain should also be divided into areas in the zigzag hatch. For example, there is a contour line C0, and other contour lines C1, C2... we should take the extreme value of each contour line in the vertical axis direction, and make a horizontal line through each extreme value point. If the number of intersection points is the same on its both sides, the point is confirmed as the starting point of a dividing line, and the first focus of the front of the sequence is the end of the dividing line. Just like the single connected domain, we can get several regions, and then fill these regions with zigzag lines.
+Like the single connected domain, the multiply-connected domain should also be divided into areas in the zigzag hatch. For example, there is a contour line C0, and other contour lines C1, C2... we should take the extreme value of each contour line in the vertical axis direction, and make a horizontal line through each extreme value point. If the number of intersection points is the same on its both sides, the point is confirmed as the starting point of a dividing line, and the first focus of the front of the sequence is the end of the dividing line. Just like the single connected domain, we can get several regions, and then fill these regions with zigzag lines.
 
 
 \subsubsection{The contour parallel hatch}
