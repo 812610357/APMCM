@@ -98,7 +98,7 @@ def draw(data):
         temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
     temp = iflong(temp)
-    #temp = ifcross(temp)
+    temp = ifcross(temp)
     temp = ifwide(temp, data)
     plt.plot(temp[:, 0], temp[:, 1], '-', color='r')
     return(temp)
@@ -126,7 +126,7 @@ def ifwide(data, last):
                 break
             if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:
                 data = np.delete(data, i, axis=0)
-                j -= 20
+                j -= 10
             else:
                 j += 1
         i += 1
@@ -165,7 +165,9 @@ def ifdivide(data):  # 判断区域划分
     return(np.array([0, 0]))
 
 
-def area(data):
+def drawline(data):
+    length = 0
+    times = 0
     while True:
         temp = data[-1]
         if data[0].shape[0] < 10:
@@ -178,21 +180,30 @@ def area(data):
         if index[0] == 0 and index[1] == 0:
             data[-1] = draw(temp)
             print(1)
+            times += 1
+            for j in range(data[-1].shape[0]-1):
+                length = length + \
+                    math.sqrt((data[-1][j+1, 0]-data[-1][j, 0])**2 +
+                              (data[-1][j+1, 1]-data[-1][j, 1])**2)
             #plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
             # plt.show()
             # plt.axis("equal")
         else:
             data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
+            data[len(data)-1] = np.row_stack((data[len(data)-1],
+                                              data[len(data)-1][0, :]))
             temp1 = temp[0:math.floor(index[0])+1, :]
             temp2 = temp[math.floor(index[1]):temp.shape[0], :]
             data[len(data)-2] = np.row_stack((temp1, temp2))
-    pass
+    return([length, times])
 
 
 data = list([data])
-area(data)
+data = drawline(data)
 
 end = time.thread_time()
-print('Running time: %s Seconds' % (end-start))
+print('Length of curve: %s mm' % data[0])
+print('Number of turns: %s' % data[1])
+print('Running time:    %s Seconds' % (end-start))
 
 plt.show()

@@ -150,6 +150,7 @@ def writecsv(data):
 
 def drawline(data):
     length = 0  # 画线总长
+    times = 0  # 平行线数量
     cl = ['r', 'g']
     for i in range(len(data)):
         line = np.array([0, 0])
@@ -171,8 +172,13 @@ def drawline(data):
             j = round(j + abs(d), 1)
         line = np.delete(line, 0, axis=0)
         plt.plot(line[:, 1], line[:, 0], '-', color=cl[i % 2])
+        times = times+int(line.shape[0]/2)
+        for j in range(line.shape[0]-1):
+            length = length + \
+                math.sqrt((line[j+1, 0]-line[j, 0])**2 +
+                          (line[j+1, 1]-line[j, 1])**2)
         i += 1
-    pass
+    return([length, times])
 
 
 data = drawborder(data)
@@ -180,7 +186,7 @@ data = getint(data)
 data = list([data])
 data = divide(data)
 writecsv(data)
-drawline(data)
+data = drawline(data)
 
 
 '''
@@ -196,6 +202,8 @@ drawline(data)
 
 
 end = time.thread_time()
-print('Running time: %s Seconds' % (end-start))
+print('Length of curve:         %s mm' % data[0])
+print('Number of parallel line: %s' % data[1])
+print('Running time:            %s Seconds' % (end-start))
 
 plt.show()
