@@ -80,7 +80,7 @@ def district(data, last):
     global sheet
     sheet = list([])
     max = multiprocessing.cpu_count()
-    if data.shape[0] % max < 100:
+    if data.shape[0] / max < 100:
         max = int(data.shape[0]/100)
     n = int(data.shape[0]/max)
     for i in range(max-1):
@@ -90,7 +90,7 @@ def district(data, last):
     threading.Thread(target=ifwide, args=(sheet[max-1], last, max-1,)).start()
     output = np.array(sheet[0])
     for i in range(1, max):
-        output = np.row_stack(output, sheet[i])
+        output = np.row_stack((output, sheet[i]))
     return(output)
 
 
