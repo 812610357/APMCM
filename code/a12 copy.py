@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import math
 import time
+import threading
 
 start = time.thread_time()
 
@@ -122,35 +123,28 @@ def drawline(data):
     length = 0
     times = 0
     while True:
-        temp = data[-1]
-        if data[0].shape[0] < 10:
-            break
-        if temp.shape[0] < 10:
-            del data[len(data)-1]
+        temp = data
+        if data.shape[0] < 10:
             print('-')
-            continue
+            break
         index = ifdivide(temp)  # 分割点序号
         if index[0] == 0 and index[1] == 0:
-            data[-1] = draw(temp)
+            data = draw(temp)
             print(times)
             times += 1
-            for j in range(data[-1].shape[0]-1):
-                length = length + \
-                    math.sqrt((data[-1][j+1, 0]-data[-1][j, 0])**2 +
-                              (data[-1][j+1, 1]-data[-1][j, 1])**2)
             # plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
             # plt.show()
             # plt.axis("equal")
         else:
-            data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
-            data[-1] = np.row_stack((data[-1], data[-1][0:1, :]))
+            new = temp[math.floor(index[0])+1: math.floor(index[1]), :]
+            new = np.row_stack((new, new[0, :]))
+            threading.Thread(target=drawline, args=(new,)).start()
             temp1 = temp[0:math.floor(index[0])+1, :]
             temp2 = temp[math.floor(index[1]):temp.shape[0], :]
-            data[-2] = np.row_stack((temp1, temp2))
+            data = np.row_stack((temp1, temp2))
     return([length, times])
 
 
-data = list([data])
 data = drawline(data)
 
 end = time.thread_time()
