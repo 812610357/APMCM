@@ -128,7 +128,17 @@ The following is the processing result of our algorithm on the given data.
 When the accuracy is $1mm$, the total length of the curve is $918.98mm$, the number of parallel lines is $89$, and the average elapsed time is $(6.89\times 10^3\pm 30)$ mm. When the accuracy is 0.1mm, the total length of the curve is $10022.71mm$, the number of parallel lines is $911$, and the average elapsed time is $(7.75\times 10^3\pm 40) mm$. The time-consuming ratio in the two cases is $1.12$.
 
 
+It can be clearly seen from the data that after the accuracy is improved, the time-consuming increase of this algorithm is small.
 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=7cm]{zigzag detail 0.1mm} \quad \includegraphics[width=7cm]{zigzag detail 1mm}
+  \caption{\CJK{UTF8}{gbsn}{zigzag hatching detail with $0.1mm$ accuracy}}
+  \caption{\CJK{UTF8}{gbsn}{zigzag hatching detail
+      with $1mm$ accuracy}}
+\end{figure}
+
+The above pictures show the details of the same part under two precisions. Under low precision, due to the order of the points, at the boundary of the partition, the points on the left are directly connected to the points on the right not in the same row, resulting in sharp angles. But with high precision, this kind of flaw is reduced and hidden in the zigzag curve, which is difficult to be found and can be ignored.
 
 \subsubsection{The contour parallel hatch}
 
@@ -136,14 +146,19 @@ When the accuracy is $1mm$, the total length of the curve is $918.98mm$, the num
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=7cm]{contour0.1mm} \quad \includegraphics[width=7cm]{contour1mm}
-  \caption{\CJK{UTF8}{gbsn}{zigzag hatching with $0.1mm$ accuracy}}
-  \caption{\CJK{UTF8}{gbsn}{zigzag hatching with $1mm$ accuracy}}
+  \caption{\CJK{UTF8}{gbsn}{contour parallel hatching with $0.1mm$ accuracy}}
+  \caption{\CJK{UTF8}{gbsn}{contour parallel hatching with $1mm$ accuracy}}
 \end{figure}
 
 When the accuracy is $1mm$, the total length of the curve is $985.26mm$, the number of circles is $11$, and the average elapsed time is $(2.91\times 10^4\pm 200)$ mm. When the accuracy is $0.1mm$, the total length of the curve is $10060.39mm$, the number of circles is $129$, and the average elapsed time is $(6.25\times 10^5\pm 2000)$ mm. The time-consuming ratio in the two cases is $21.48$.
 
 
-
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=7cm]{contour detail 0.1mm} \quad \includegraphics[width=7cm]{contour detail 1mm}
+  \caption{\CJK{UTF8}{gbsn}{contour parallel detail hatching with $0.1mm$ accuracy}}
+  \caption{\CJK{UTF8}{gbsn}{contour parallel detail hatching with $1mm$ accuracy}}
+\end{figure}
 
 \subsubsection{Comparison of two hatch methods}
 
@@ -157,6 +172,8 @@ Like the single connected domain, the multiply-connected domain should also be d
 
 
 \subsubsection{The contour parallel hatch}
+
+In the multiply-connected domain, in addition to the segmentation of contours, there is also the merging of contours. When the same-level inner shrinking lines from different contours are close, they need to be merged into a contour line in a certain order. It means that two interrupted points are connected to each other, and connect one of the contour lines to the end, and then continue to fill in according to the method of single connected domain.
 
 \section{Conclusions}
 
@@ -233,6 +250,7 @@ The algorithm we proposed realizes the filling of two-dimensional closed curve p
 \section{Future Work}
 \subsection{Ideas to solve existing problems}
 Zigzag, as the most common hatching method at present, has many sharp turns. For shapes with complex borders or hollow, this disadvantage will be very obvious.The contour parallel algorithm can avoid too many sharp turns, but it leads to more contours and the contours are not connected. For the problems of these two hatching methods, we can use the Fermat spiral filling to solve it. The Fermat spiral consists of two intertwined sub-helices, one inward and the other outward. The Fermat spiral has three advantages:
+\cite{2}
 
 
 1) Similar to the contour parallel hatch, the Fermat spiral only has a sharp turn at the center.
@@ -249,6 +267,7 @@ In actual industrial applications, in addition to the running time of the algori
 \subsubsection{Reducing the amount of data}
 In the actual laser marking process, the original image often contains a large number of data points. To delete redundant or isolated data points can shorten the running time of the program.
 \subsubsection{Program optimization}
+\cite{1}
 1)Algorithm optimization:
 An excellent algorithm can reduce the complexity of the algorithm by several orders of magnitude, and its average time-consuming is generally less than other algorithms with high complexity
 There is another situation where the algorithm itself is relatively complicated, its time complexity is difficult to reduce, and its efficiency does not meet the requirements. The measures that can be taken are: maintaining the effect of the algorithm to improve efficiency, and discarding part of the effect in exchange for a certain efficiency.
@@ -283,15 +302,9 @@ Due to the limitation of single-threaded, our code can only run in a single thre
 
 %参考文献
 \begin{thebibliography}{9}%宽度9
-  \bibitem{1} Author, Title, Place of Publication: Press, Year of publication.
-  \bibitem{2} author, paper name, magazine name, volume number: starting and ending
-  page number, year of publication.
-  \bibitem{3} author, resource title, web site, visit time (year, month, day).
-  \bibitem{bib:one} \LaTeX{}\CJK{UTF8}{gbsn}{资源和技巧学习} \url{https://www.latexstudio.net}
-  \bibitem{bib:two} \LaTeX{}\CJK{UTF8}{gbsn}{问题交流网站} \url{https://wenda.latexstudio.net}
-  \bibitem{bib:two} \CJK{UTF8}{gbsn}{模板库维护} \url{https://github.com/latexstudio/APMCMThesis}
-  \bibitem{4} Kaposi, M. “IDIOPATHISCHES MULTIPLES PIGMENTSARKOM DER HAUT.” Wiener Klinische Wochenschrift, vol. 4, no. 2, 1872, pp. 265–273.
-\end{thebibliography}
+\bibitem{bib:one} \CJK{UTF8}{gbsn}{浅谈程序优化} \url{https://www.cnblogs.com/jcchen1987/p/4362879.html}
+\bibitem{bib:two} \CJK{UTF8}{gbsn}{3D打印路径填充算法} \url{https://blog.csdn.net/weixin_33769207/article/details/93196133?utm_source=app}
+
 
 \newpage
 %附录

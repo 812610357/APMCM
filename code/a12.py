@@ -8,7 +8,7 @@ start = time.thread_time()
 
 data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
 data = data0  # 从csv文件获取数据
-d = -0.1  # 精度
+d = -1  # 精度
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 dots = 0
