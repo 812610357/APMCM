@@ -132,12 +132,12 @@ def drawline(data):
             break
         if temp.shape[0] < 10:
             del data[len(data)-1]
-            print(0)
+            print(-)
             continue
         index = ifdivide(temp)  # 分割点序号
         if index[0] == 0 and index[1] == 0:
             data[-1] = draw(temp)
-            print(1)
+            print(times)
             times += 1
             for j in range(data[-1].shape[0]-1):
                 length = length + \
