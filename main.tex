@@ -164,6 +164,12 @@ Reducing the same accuracy, the algorithm takes significantly longer time. At lo
 
 \subsubsection{Comparison of two hatch methods}
 
+For zigzag hatch, the advantage is that the coordinates of the original geometric figure are rounded, and the zigzag line of the entire figure can be generated only through the data of the boundary. Because of the rounding operation, the algorithm does not need to meet other requirements for the relative position between the points in the original data, and only needs to judge and process according to the ordinate of the point. For the internal main part of the graph, the algorithm does not need to be processed. In the actual laser marking process, most of the time the laser marking machine only performs one-dimensional movement and only needs a servo motor to work.
+
+
+Comparing contour hatching with glyph hatching, its biggest feature is the huge amount of data and the huge computational workload. This is because the point data on each contour line needs to be generated from the point data on the previous contour line. Taking the data in this question as an example, under the same 0.1mm accuracy condition, the zigzag hatching algorithm only produced 1816 points, while the contour hatching algorithm produced 78578 points. Due to the increase in the number of points and more conditions for the contour line to be judged, the calculation amount of the contour line algorithm will be very large. The most direct manifestation is the extension of calculation time. At 0.1mm accuracy, the contour algorithm takes more than 10 minutes, while the zigzag algorithm only takes about 7 seconds. However, it is precisely because of more data that the accuracy of the contour algorithm on the boundary will be higher in the same situation. For example, in the zigzag algorithm, two adjacent horizontal lines are separated by one accuracy unit, but the abscissas of their endpoints on the same side may be very different, so the actual distance between the two points will be very far. The distance between the points on the boundary of the contour algorithm is always related to the initial data. As long as the distance between two adjacent points of the initial data is close enough, the distance between the points produced will not become particularly far.
+
+
 \subsection{hatch of multiply-connected domain}
 
 Due to the limitation of time and calculation conditions, we have not been able to complete the hatching of the two ways of multiply-connected domain. Only our ideas for solving this problem are given here.
