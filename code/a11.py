@@ -56,7 +56,7 @@ def drawborder(data):
             temp = np.row_stack((temp, new))
         i += 1
     temp = np.delete(temp, 0, axis=0)
-#    plt.plot(temp[:, 0], temp[:, 1], '-o', color='y', markersize=2)
+    # plt.plot(temp[:, 0], temp[:, 1], '-o', color='y', markersize=2)
     return(temp)
 
 
@@ -80,7 +80,7 @@ def getint(data):
                     new[0] = (new[1]-y1)/k+x1
                     temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
-#    plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
+    # plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
     return(temp)
 
 
@@ -187,19 +187,6 @@ data = list([data])
 data = divide(data)
 writecsv(data)
 data = drawline(data)
-
-
-'''
-data = np.array(pd.read_csv(".\code\\area0.csv", header=0))
-data = list([data])
-data.append(np.array(pd.read_csv(".\code\\area1.csv", header=0)))
-data.append(np.array(pd.read_csv(".\code\\area2.csv", header=0)))
-data.append(np.array(pd.read_csv(".\code\\area3.csv", header=0)))
-data.append(np.array(pd.read_csv(".\code\\area4.csv", header=0)))
-data.append(np.array(pd.read_csv(".\code\\area5.csv", header=0)))
-drawline(data)
-'''
-
 
 end = time.thread_time()
 print('Length of curve:         %s mm' % data[0])
