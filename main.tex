@@ -60,7 +60,7 @@ For the contour parallel hatch, we will iterate the steps of indentation. In the
 
 The applicable objects of the algorithms in this paper are most of the two-dimensional geometric figures with curved polygons as the boundary. Both algorithms use given points data to generate appropriate point coordinate data through a certain transformation, and then connect them in a certain order to obtain the incubation path. They have a certain approximation, and through reasonable judgment conditions, the data of the generated points are appropriately screened, and points are automatically added between two points far away to complete the hatch path.
 
-\subsubsection{The direction parallel hatch}
+
 
 \subsubsection{The contour parallel hatch}
 
@@ -73,7 +73,8 @@ The argument and the angle between the two vectors are our basis for judgment. W
 
 When the contour lines continue to shrink inward, the area enclosed by the contour lines gets smaller and smaller. At this time, the density of points will become larger and larger. If the distance between non-adjacent points is too small, we use these two points as the starting point and the end point, and divide the original closed figure into two closed figures, then shrink. In this way, we have completed the partitioning of the images where the contour may have multiple closed loops. Due to the limitation of the distance between two points, the circulation stops when the function can no longer generate new points.
 
-\subsection{The Reasonableness of approximating}
+
+\subsubsection{The direction parallel hatch}
 
 
 Since the hatching boundary is required to have a certain distance from the graphic boundary in the title, we need to shrink the graphic using the algorithm for generating contour lines in the first step, and get a new set of point data. The horizontal lines of the zigzag hatch are arranged at equal intervals. We use the difference method to take the intersection of the boundary and the horizontal straight line whose ordinate is an integer multiple of precision, and obtain a discrete contour whose ordinate is an integer multiple of precision.
@@ -81,21 +82,17 @@ Since the hatching boundary is required to have a certain distance from the grap
 
 For non-convex polygons, we need to use horizontal straight lines to divide them and find the extreme points of the vertical axis in the contour sequence. If a horizontal straight line crosses this extreme point and crosses the contour on both sides of the extreme point at the same time, we take this point as the starting point of the dividing line, take the point in front of the sequence of the two intersection points as the end point, and split the contour into two closed areas. Dividing the formed areas as above, we can obtain multiple area, and do zigzag hatching in these areas.
 
+
+\subsection{The Reasonableness of approximating}
+
+
 \subsubsection{Rounding of data point coordinates}
 In the zigzag hatching, since the parallel lines must be parallel to the x-axis, we must make the ordinates of the data points obtained after indentation correspond to the same. This will cause deformation in the part with a smaller radius of curvature in the graph. However, due to the limitation of hatching accuracy, we have no way to fill these parts (the remaining space is not enough to make the distance between parallel lines reach the specified value), so this kind of deformation will not be reflected in hatching.
 
 \subsubsection{Deleting and adding some special points}
 In contour parallel hatch, during the iteration of the shrinking operation, we found that there are two situations that do not meet the requirements. First, the points generated after the iteration are too close to the curve before the iteration; second, the curves generated after the iteration form a closed triangle. Our algorithm will automatically identify these two situations and delete or add data points. It will cause slight deformation of the graph, for example, a smooth curve will produce some edges and corners after iteration, resulting in some small vacancies. However, when the accuracy meets the requirements, the finished product is not partially enlarged, but from the overall perspective, it is difficult to see that the indented graphics has deformed, and the existence of these vacancies cannot be seen. Moreover, the purpose of our indentation is to generate contour lines to fill the graphics, and this deformation will not interfere with our ultimate goal. So our approximation is reasonable.
 
-\subsection{The local optimization and the overall optimization}
-In computer system design, Amdahl's law is generally used to describe the effect of improving the performance of a certain part of the system. When a certain part of the system is improved, we can get the speedup of the program:
-\begin{align}
-  S=1/((1-a)+a/k)
-\end{align}
-Among them, $a$ is the ratio of the execution time required for this part to the total execution time of the program, and $k$ is the ratio of the execution time required for this part after optimization to that before optimization.
 
-\subsection{Algorithmic Complexity}
-The complexity of the algorithm is divided into time complexity and space complexity. Since the number of variables in the article is relatively unchanged, we mainly discuss time complexity here.
 
 
 \section{Models}
