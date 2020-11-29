@@ -12,6 +12,8 @@ data = data0  # 从csv文件获取数据
 d = -0.1  # 精度
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
+list = list([])
+times = 0
 
 
 def unit(v):  # 单位化
@@ -120,8 +122,8 @@ def ifdivide(data):  # 判断区域划分
 
 
 def drawline(data):
-    length = 0
-    times = 0
+    print('+')
+    global times
     while True:
         temp = data
         if data.shape[0] < 10:
@@ -130,8 +132,8 @@ def drawline(data):
         index = ifdivide(temp)  # 分割点序号
         if index[0] == 0 and index[1] == 0:
             data = draw(temp)
-            print(times)
             times += 1
+            print(times)
             # plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
             # plt.show()
             # plt.axis("equal")
@@ -142,7 +144,7 @@ def drawline(data):
             temp1 = temp[0:math.floor(index[0])+1, :]
             temp2 = temp[math.floor(index[1]):temp.shape[0], :]
             data = np.row_stack((temp1, temp2))
-    return([length, times])
+    pass
 
 
 data = drawline(data)
