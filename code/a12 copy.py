@@ -1,10 +1,6 @@
-from operator import truediv
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.core.defchararray import array
-from numpy.core.fromnumeric import shape
 import pandas as pd
-import os
 import math
 import time
 
