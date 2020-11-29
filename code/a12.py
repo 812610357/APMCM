@@ -121,7 +121,7 @@ def ifdivide(data):  # 判断区域划分
             y1 = data[i, 1]
             x2 = data[j, 0]
             y2 = data[j, 1]
-            if math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 3:
+            if 0 < math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 3:
                 v1 = data[i+2, :]-data[i, :]
                 v2 = data[j+2, :]-data[j, :]
                 if abs(angle(v1)-angle(v2)) > math.pi/2:
