@@ -29,7 +29,7 @@ def inangle(v1, v2):  # 向量夹角
     return(math.acos(round(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2)), 9)))
 
 
-def draw(data):
+def draw(data):  # 画线
     data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
     data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
     temp = np.array([0, 0])
@@ -37,32 +37,26 @@ def draw(data):
     while i < data.shape[0]-2:
         v1 = data[i+1, :]-data[i, :]
         v2 = data[i+2, :]-data[i+1, :]
-        # v1 = np.array([round(data[i+1, 0]-data[i, 0], 5),
-        #               round(data[i+1, 1]-data[i, 1], 5)])
-        # v2 = np.array([round(data[i+2, 0]-data[i+1, 0], 5),
-        #               round(data[i+2, 1]-data[i+1, 1], 5)])
-        if 0 < inangle(v1, v2) < 0.9*math.pi:
+        if 0 < inangle(v1, v2) < 0.9*math.pi:  # 一般情况在菱形中使用向量得到内缩点
             u = d/(math.sin(inangle(v1, v2)))
             if (angle(v2) > angle(v1) and not(angle(v2) > math.pi/2 and angle(v1) < -math.pi/2)) or (angle(v2) < -math.pi/2 and angle(v1) > math.pi/2):
                 new = data[i+1, :]+(unit(v2)-unit(v1))*u
             else:
                 new = data[i+1, :]-(unit(v2)-unit(v1))*u
         else:
-            if inangle(v1, v2) == 0:
+            if inangle(v1, v2) == 0:  # 两向量平行的特殊情况
                 if angle(v1) > 0:
                     new = data[i+1, :] + unit([v1[1], -v1[0]])*abs(d)
                 else:
                     new = data[i+1, :] - unit([-v1[1], v1[0]])*abs(d)
-            else:
+            else:  # 排除转角过大的点
                 i += 1
                 continue
         i += 1
-        if np.linalg.norm(new-temp[-1]) < abs(d)*0.3 or np.linalg.norm(new-temp[-2]) < abs(d)*0.3:
-            continue
         temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
-    temp = iflong(temp)
-    temp = ifcross(temp)
+    temp = iflong(temp)  # 精度控制
+    temp = ifcross(temp)  # 交叉控制
     temp = ifwide(temp, data)
     plt.plot(temp[:, 0], temp[:, 1], '-', color='r')
     return(temp)
@@ -90,7 +84,7 @@ def ifwide(data, last):
                 break
             if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:
                 data = np.delete(data, i, axis=0)
-                j -= 10
+                j = 0
             else:
                 j += 1
         i += 1
