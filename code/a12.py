@@ -64,7 +64,7 @@ def draw(data):  # 画线
 
 def iflong(data):  # 同级点间距控制
     i = 0
-    while i < data.shape[0]-1:
+    while i < data.shape[0]-1:  # 遍历所有数据
         if np.linalg.norm(data[i+1, :]-data[i, :]) > 2*abs(d):  # 两点间距过大的添加中点
             new = np.array([(data[i+1, 0]+data[i, 0])/2,
                             (data[i+1, 1]+data[i, 1])/2])
@@ -77,12 +77,12 @@ def iflong(data):  # 同级点间距控制
 
 def ifwide(data, last):  # 与上一级间距控制
     i = 0
-    while i < data.shape[0]:
+    while i < data.shape[0]:  # 遍历该级所有数据
         j = 0
-        while j < last.shape[0]:
+        while j < last.shape[0]:  # 遍历上级所有数据
             if i >= data.shape[0]:
                 break
-            if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:  # 小于一个间距的直接删除
+            if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:  # 小于一个精度的直接删除
                 data = np.delete(data, i, axis=0)
                 j = 0
             else:
@@ -96,7 +96,7 @@ def ifcross(data):  # 交叉控制
     i = 0
     while j:
         j = 0
-        while i < data.shape[0]-3:
+        while i < data.shape[0]-3:  # 遍历该级所有数据
             v1 = data[i+1, :]-data[i, :]
             v2 = data[i+2, :]-data[i+1, :]
             v3 = data[i+3, :]-data[i+2, :]
