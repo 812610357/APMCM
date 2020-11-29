@@ -89,6 +89,12 @@ Since the hatching boundary is required to have a certain distance from the grap
 
 For non-convex polygons, we need to use horizontal straight lines to divide them and find the extreme points of the vertical axis in the contour sequence. If a horizontal straight line crosses this extreme point and crosses the contour on both sides of the extreme point at the same time, we take this point as the starting point of the dividing line, take the point in front of the sequence of the two intersection points as the end point, and split the contour into two closed areas. Dividing the formed areas as above, we can obtain multiple area, and do zigzag hatching in these areas.
 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=8cm]{e}
+  \caption{\CJK{UTF8}{gbsn}{Schematic diagram of segmentation method}}
+\end{figure}
+
 
 \subsection{The Reasonableness of approximating}
 
@@ -139,6 +145,7 @@ Due to the limitation of time and calculation conditions, we have not been able 
 \subsubsection{The direction parallel hatch}
 
  Like the single connected domain, the multiply-connected domain should also be divided into areas in the zigzag hatch. For example, there is a contour line C0, and other contour lines C1, C2... we should take the extreme value of each contour line in the vertical axis direction, and make a horizontal line through each extreme value point. If the number of intersection points is the same on its both sides, the point is confirmed as the starting point of a dividing line, and the first focus of the front of the sequence is the end of the dividing line. Just like the single connected domain, we can get several regions, and then fill these regions with zigzag lines.
+
 
 \subsubsection{The contour parallel hatch}
 
