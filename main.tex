@@ -21,8 +21,8 @@
 \pagestyle{frontmatterstyle}
 
 \begin{abstract}
-  With laser, the hatch tool of laser marking machine can be used to realize the work of making two-dimensional graphics. However, the selection and layout of hatch methods and paths greatly affect the difficulty and efficiency of incubation. The hatch problem of the laser marking machine on the two-dimensional closed graph can be equivalent to the problem of filling the two-dimensional closed curvilinear polygon with the curves connected by scattered points. Here, we provide two Python-based filling algorithms. They respectively correspond the zigzag hatch and the contour parallel hatch. Both of these two algorithms utilize vectors to the greatest extent on the basis of inward shrinking of the initial graphics to process the graphics lattice data, and use the distance between two points and the argument of vector as the basis for determining. Importantly, the algorithm automatically filters the lattice data at the sharp points of the figure after rational simplification, optimizes the shrinking of the arc with a very small radius of curvature. It also can ensure that the graphics formed after filtering can meet the requirements. This method breaks the limitation of the traditional algorithm that can only handle simple geometric figures. It provides the possibility to deal with complex curve polygons, and optimize the laser marking machine’s refined processing of complex graphics. Meanwhile, we avoid solving a large number of linear equations in the algorithm and improve its efficiency. However, because of the filtering of the lattice, the graphics we get may have some unexpected deformation. Therefore, we still need some extra program to adjust it.
-  \keywords{Python\quad  filling algorithm\quad   vector\quad  zigzag hatch\quad  contour parallel hatch}
+    With laser, the hatch tool of laser marking machine can be used to realize the work of making two-dimensional graphics. However, the selection and layout of hatch methods and paths greatly affect the difficulty and efficiency of incubation. The hatch problem of the laser marking machine on the two-dimensional closed graph can be equivalent to the problem of filling the two-dimensional closed curvilinear polygon with the curves connected by scattered points. Here, we provide two Python-based filling algorithms. They respectively correspond the zigzag hatch and the contour parallel hatch. Both of these two algorithms utilize vectors to the greatest extent on the basis of inward shrinking of the initial graphics to process the graphics lattice data, and use the distance between two points and the argument of vector as the basis for determining. Importantly, the algorithm automatically filters the lattice data at the sharp points of the figure after rational simplification, optimizes the shrinking of the arc with a very small radius of curvature. It also can ensure that the graphics formed after filtering can meet the requirements. This method breaks the limitation of the traditional algorithm that can only handle simple geometric figures. It provides the possibility to deal with complex curve polygons, and optimize the laser marking machine’s refined processing of complex graphics. Meanwhile, we avoid solving a large number of linear equations in the algorithm and improve its efficiency. However, because of the filtering of the lattice, the graphics we get may have some unexpected deformation. Therefore, we still need some extra program to adjust it.
+    \keywords{Python\quad  filling algorithm\quad   vector\quad  zigzag hatch\quad  contour parallel hatch}
 \end{abstract}
 
 
@@ -68,9 +68,9 @@ The applicable objects of the algorithms in this paper are most of the two-dimen
 \subsubsection{The contour parallel hatch}
 
 \begin{figure}[!ht]
-  \centering
-  \includegraphics[width=12cm]{v}
-  \caption{\CJK{UTF8}{gbsn}{The way of vector translation}}
+    \centering
+    \includegraphics[width=12cm]{v}
+    \caption{\CJK{UTF8}{gbsn}{The way of vector translation}}
 \end{figure}
 
 The method we use is to form two vectors through two points before and after a certain point. The straight line where the two vectors are located is translated by one precision unit into the graph, and the resulting intersection point is the mapping of the point of the new path generated inward by this point. To get the coordinates of the new point, we will unitize the vectors formed by the original three points, multiply the precision, and divide by the sine of the angle of the vector. Then we add the two vectors after processing to obtain the vector needed for transformation. The coordinates of the original point are added to the transformation vector to obtain the coordinates of the new point. According to the data given in the question, the order of the points on the outer boundary is counterclockwise. To ensure that the newly generated points are inside the original graphics, all new points must be guaranteed to be on the right side of the vector where their origin is located.
@@ -91,9 +91,9 @@ Since the hatching boundary is required to have a certain distance from the grap
 For non-convex polygons, we need to use horizontal straight lines to divide them and find the extreme points of the vertical axis in the contour sequence. If a horizontal straight line crosses this extreme point and crosses the contour on both sides of the extreme point at the same time, we take this point as the starting point of the dividing line, take the point in front of the sequence of the two intersection points as the end point, and split the contour into two closed areas. Dividing the formed areas as above, we can obtain multiple area, and do zigzag hatching in these areas.
 
 \begin{figure}[!ht]
-  \centering
-  \includegraphics[width=12cm]{e}
-  \caption{\CJK{UTF8}{gbsn}{Schematic diagram of segmentation method}}
+    \centering
+    \includegraphics[width=12cm]{e}
+    \caption{\CJK{UTF8}{gbsn}{Schematic diagram of segmentation method}}
 \end{figure}
 
 
@@ -119,10 +119,10 @@ The following is the processing result of our algorithm on the given data.
 
 
 \begin{figure}[!ht]
-  \centering
-  \includegraphics[width=7cm]{zigzag0.1mm} \quad \includegraphics[width=7cm]{zigzag1mm}
-  \caption{\CJK{UTF8}{gbsn}{zigzag hatching with $0.1mm$ accuracy}}
-  \caption{\CJK{UTF8}{gbsn}{zigzag hatching with $1mm$ accuracy}}
+    \centering
+    \includegraphics[width=7cm]{zigzag0.1mm} \quad \includegraphics[width=7cm]{zigzag1mm}
+    \caption{\CJK{UTF8}{gbsn}{zigzag hatching with $0.1mm$ accuracy}}
+    \caption{\CJK{UTF8}{gbsn}{zigzag hatching with $1mm$ accuracy}}
 \end{figure}
 
 When the accuracy is $1mm$, the total length of the curve is $918.98mm$, the number of parallel lines is $89$, and the average elapsed time is $(6.89\times 10^3\pm 30)$ mm. When the accuracy is 0.1mm, the total length of the curve is $10022.71mm$, the number of parallel lines is $911$, and the average elapsed time is $(7.75\times 10^3\pm 40) mm$. The time-consuming ratio in the two cases is $1.12$.
@@ -131,11 +131,11 @@ When the accuracy is $1mm$, the total length of the curve is $918.98mm$, the num
 It can be clearly seen from the data that after the accuracy is improved, the time-consuming increase of this algorithm is small.
 
 \begin{figure}[!ht]
-  \centering
-  \includegraphics[width=7cm]{zigzag detail 0.1mm} \quad \includegraphics[width=7cm]{zigzag detail 1mm}
-  \caption{\CJK{UTF8}{gbsn}{zigzag hatching detail with $0.1mm$ accuracy}}
-  \caption{\CJK{UTF8}{gbsn}{zigzag hatching detail
-      with $1mm$ accuracy}}
+    \centering
+    \includegraphics[width=7cm]{zigzag detail 0.1mm} \quad \includegraphics[width=7cm]{zigzag detail 1mm}
+    \caption{\CJK{UTF8}{gbsn}{zigzag hatching detail with $0.1mm$ accuracy}}
+    \caption{\CJK{UTF8}{gbsn}{zigzag hatching detail
+            with $1mm$ accuracy}}
 \end{figure}
 
 The above pictures show the details of the same part under two precisions. Under low precision, due to the order of the points, at the boundary of the partition, the points on the left are directly connected to the points on the right not in the same row, resulting in sharp angles. But with high precision, this kind of flaw is reduced and hidden in the zigzag curve, which is difficult to be found and can be ignored.
@@ -144,20 +144,20 @@ The above pictures show the details of the same part under two precisions. Under
 
 
 \begin{figure}[!ht]
-  \centering
-  \includegraphics[width=7cm]{contour0.1mm} \quad \includegraphics[width=7cm]{contour1mm}
-  \caption{\CJK{UTF8}{gbsn}{contour parallel hatching with $0.1mm$ accuracy}}
-  \caption{\CJK{UTF8}{gbsn}{contour parallel hatching with $1mm$ accuracy}}
+    \centering
+    \includegraphics[width=7cm]{contour0.1mm} \quad \includegraphics[width=7cm]{contour1mm}
+    \caption{\CJK{UTF8}{gbsn}{contour parallel hatching with $0.1mm$ accuracy}}
+    \caption{\CJK{UTF8}{gbsn}{contour parallel hatching with $1mm$ accuracy}}
 \end{figure}
 
 When the accuracy is $1mm$, the total length of the curve is $985.26mm$, the number of circles is $11$, and the average elapsed time is $(2.91\times 10^4\pm 200)$ mm. When the accuracy is $0.1mm$, the total length of the curve is $10060.39mm$, the number of circles is $129$, and the average elapsed time is $(6.25\times 10^5\pm 2000)$ mm. The time-consuming ratio in the two cases is $21.48$.
 
 
 \begin{figure}[!ht]
-  \centering
-  \includegraphics[width=7cm]{contour detail 0.1mm} \quad \includegraphics[width=7cm]{contour detail 1mm}
-  \caption{\CJK{UTF8}{gbsn}{contour parallel detail hatching with $0.1mm$ accuracy}}
-  \caption{\CJK{UTF8}{gbsn}{contour parallel detail hatching with $1mm$ accuracy}}
+    \centering
+    \includegraphics[width=7cm]{contour detail 0.1mm} \quad \includegraphics[width=7cm]{contour detail 1mm}
+    \caption{\CJK{UTF8}{gbsn}{contour parallel detail hatching with $0.1mm$ accuracy}}
+    \caption{\CJK{UTF8}{gbsn}{contour parallel detail hatching with $1mm$ accuracy}}
 \end{figure}
 
 Reducing the same accuracy, the algorithm takes significantly longer time. At low precision, some lines overlap. Due to the limitation of the initial data volume, we must add a certain number of points to ensure the curve is closed, which leads to the generation of blanks at the smaller radius of curvature. This effect is more obvious under high precision.
@@ -302,16 +302,16 @@ e. Pre-allocated memory
 3)Instruction optimization
 Instruction optimization generally uses a specific instruction set to quickly implement certain operations. Another core idea of instruction optimization is packed operations.
 
-\subsubsection{Multi-threaded operation}
-Due to the limitation of single-threaded, our code can only run in a single thread. However, we found that after partitioning, the iteration of each region, the correspondence between points, and the detection of each point are relatively independent, which makes it possible for some programs to run in multiple threads. Through multi-threaded processing, we can greatly reduce the running time of the program, thereby improving its performance.
+\subsubsection{Multi-Progress operation}
+Due to the limitation of single-Progress, our code can only run in a single process. However, we found that after partitioning, the iteration of each region, the correspondence between points, and the detection of each point are relatively independent, which makes it possible for some programs to run in multiple process. Through multi-Progress processing, we can greatly reduce the running time of the program, thereby improving its performance.
 
 
 
 
 %参考文献
 \begin{thebibliography}{9}%宽度9
-  \bibitem{1} \CJK{UTF8}{gbsn}{浅谈程序优化} \url{https://www.cnblogs.com/jcchen1987/p/4362879.html}
-  \bibitem{2} \CJK{UTF8}{gbsn}{3D打印路径填充算法} \url{https://blog.csdn.net/weixin_33769207/article/details/93196133?utm_source=app}
+    \bibitem{1} \CJK{UTF8}{gbsn}{浅谈程序优化} \url{https://www.cnblogs.com/jcchen1987/p/4362879.html}
+    \bibitem{2} \CJK{UTF8}{gbsn}{3D打印路径填充算法} \url{https://blog.csdn.net/weixin_33769207/article/details/93196133?utm_source=app}
 \end{thebibliography}
 
 \newpage
@@ -319,7 +319,7 @@ Due to the limitation of single-threaded, our code can only run in a single thre
 
 \section{Appendix}
 \begin{lstlisting}[language=Python,caption={The python Source code of contour parallel hatch}]
-  import matplotlib.pyplot as plt
+  import matplotlib.pyplot as plt 
   import numpy as np
   from numpy.core.fromnumeric import argmax, argmin
   import pandas as pd
