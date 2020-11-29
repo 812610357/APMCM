@@ -323,39 +323,38 @@ Due to the limitation of single-Progress, our code can only run in a single proc
   import numpy as np
   from numpy.core.fromnumeric import argmax, argmin
   import pandas as pd
-  import os
   import math
   import time
   
   start = time.thread_time()
   
-  data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 
+  data = np.array(pd.read_csv(".\code\graph1.csv", header=2))   
   d = -0.1
   plt.axis("equal")
   plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
   dots = 0
   
   
-  def findex(data, i):  # 
+  def findex(data, i):   
       if (data[i, 1] >= data[i-1, 1] and data[i, 1] > data[i+1, 1]) or (data[i, 1] <= data[i-1, 1] and data[i, 1] < data[i+1, 1]):
           return(1)
       else:
           return(0)
   
   
-  def unit(v):  # 
+  def unit(v):   
       return(v/np.linalg.norm(v))
   
   
-  def angle(v):  # 
+  def angle(v):   
       return(math.atan2(v[1], v[0]))
   
   
-  def inangle(v1, v2):  # 
+  def inangle(v1, v2):   
       return(math.acos(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2))))
   
   
-  def drawborder(data):  # 
+  def drawborder(data):   
       data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
       data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
       temp = np.array([0, 0])
@@ -378,18 +377,18 @@ Due to the limitation of single-Progress, our code can only run in a single proc
               temp = np.row_stack((temp, new))
           i += 1
       temp = np.delete(temp, 0, axis=0)
-      # plt.plot(temp[:, 0], temp[:, 1], '-o', color='y', markersize=2)
+       plt.plot(temp[:, 0], temp[:, 1], '-o', color='y', markersize=2)
       return(temp)
   
   
-  def getint(data):  # 
+  def getint(data):   
       temp = new = np.array([0, 0.])
       for i in range(data.shape[0]-1):
           x1 = data[i, 0]
           y1 = data[i, 1]
           x2 = data[i+1, 0]
           y2 = data[i+1, 1]
-          k = (y2-y1)/(x2-x1)  # 
+          k = (y2-y1)/(x2-x1)   
           if y1//abs(d) < y2//abs(d):
               for j in range(1, math.floor(y2//abs(d)-y1//abs(d)+1)):
                   new[1] = round((y1//abs(d)+j)*abs(d), 1)
@@ -402,11 +401,11 @@ Due to the limitation of single-Progress, our code can only run in a single proc
                       new[0] = (new[1]-y1)/k+x1
                       temp = np.row_stack((temp, new))
       temp = np.delete(temp, 0, axis=0)
-      # plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
+       plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
       return(temp)
   
   
-  def getdline(data):  # 
+  def getdline(data):   
       temp = 0
       dline = np.array([0, 0, 0])
       for i in range(1, data.shape[0]-2):
@@ -443,7 +442,7 @@ Due to the limitation of single-Progress, our code can only run in a single proc
       return(dline)
   
   
-  def divide(data):  # 
+  def divide(data):   
       i = 0
       while True:
           dline = getdline(data[i])
@@ -470,10 +469,10 @@ Due to the limitation of single-Progress, our code can only run in a single proc
       pass
   
   
-  def drawline(data):  # 
+  def drawline(data):   
       global dots
-      length = 0  # 
-      times = 0  # 
+      length = 0   
+      times = 0   
       for i in range(len(data)):
           line = np.array([0, 0])
           area = data[i]
@@ -530,26 +529,26 @@ Due to the limitation of single-Progress, our code can only run in a single proc
   start = time.thread_time()
   
   data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
-  data = data0  #
-  d = -1  #
+  data = data0  
+  d = -1  
   plt.axis("equal")
   plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
   dots = 0
   
   
-  def unit(v):  #
+  def unit(v):  
       return(v/np.linalg.norm(v))
   
   
-  def angle(v):  #
+  def angle(v):  
       return(math.atan2(v[1], v[0]))
   
   
-  def inangle(v1, v2):  #
+  def inangle(v1, v2):  
       return(math.acos(round(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2)), 9)))
   
   
-  def draw(data):  #
+  def draw(data):  
       global dots
       data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
       data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
@@ -558,36 +557,36 @@ Due to the limitation of single-Progress, our code can only run in a single proc
       while i < data.shape[0]-2:
           v1 = data[i+1, :]-data[i, :]
           v2 = data[i+2, :]-data[i+1, :]
-          if 0 < inangle(v1, v2) < math.pi*0.9:  #
+          if 0 < inangle(v1, v2) < math.pi*0.9:  
               u = d/(math.sin(inangle(v1, v2)))
               if (angle(v2) > angle(v1) and not(angle(v2) > math.pi/2 and angle(v1) < -math.pi/2)) or (angle(v2) < -math.pi/2 and angle(v1) > math.pi/2):
                   new = data[i+1, :]+(unit(v2)-unit(v1))*u
               else:
                   new = data[i+1, :]-(unit(v2)-unit(v1))*u
           else:
-              if inangle(v1, v2) == 0:  #
+              if inangle(v1, v2) == 0:  
                   if angle(v1) > 0:
                       new = data[i+1, :] + unit([v1[1], -v1[0]])*abs(d)
                   else:
                       new = data[i+1, :] - unit([-v1[1], v1[0]])*abs(d)
-              else:  #
+              else:  
                   i += 1
                   continue
           i += 1
           temp = np.row_stack((temp, new))
           dots += 1
       temp = np.delete(temp, 0, axis=0)
-      temp = iflong(temp)  #
-      temp = ifcross(temp)  #
-      temp = ifwide(temp, data)  #
+      temp = iflong(temp)  
+      temp = ifcross(temp)  
+      temp = ifwide(temp, data)  
       plt.plot(temp[:, 0], temp[:, 1], '-', color='r')
       return(temp)
   
   
-  def iflong(data):  #
+  def iflong(data):  
       i = 0
-      while i < data.shape[0]-1:  #
-          if np.linalg.norm(data[i+1, :]-data[i, :]) > 2*abs(d):  #
+      while i < data.shape[0]-1:  
+          if np.linalg.norm(data[i+1, :]-data[i, :]) > 2*abs(d):  
               new = np.array([(data[i+1, 0]+data[i, 0])/2,
                               (data[i+1, 1]+data[i, 1])/2])
               data = np.insert(data, i+1, new,  axis=0)
@@ -597,14 +596,14 @@ Due to the limitation of single-Progress, our code can only run in a single proc
       return(data)
   
   
-  def ifwide(data, last):  #
+  def ifwide(data, last):  
       i = 0
-      while i < data.shape[0]:  #
+      while i < data.shape[0]:  
           j = 0
-          while j < last.shape[0]:  #
+          while j < last.shape[0]:  
               if i >= data.shape[0]:
                   break
-              if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:  #
+              if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:  
                   data = np.delete(data, i, axis=0)
                   if j > 20:
                       j -= 20
@@ -616,27 +615,27 @@ Due to the limitation of single-Progress, our code can only run in a single proc
       return(data)
   
   
-  def ifcross(data):  #
+  def ifcross(data):  
       i = 0
-      while i < data.shape[0]-3:  #
+      while i < data.shape[0]-3:  
           v1 = data[i+1, :]-data[i, :]
           v2 = data[i+2, :]-data[i+1, :]
           v3 = data[i+3, :]-data[i+2, :]
-          if inangle(v1, v2)+inangle(v2, v3) > math.pi:  #
+          if inangle(v1, v2)+inangle(v2, v3) > math.pi:  
               data = np.delete(data, [i+1, i+2], axis=0)
           else:
               i += 1
       return(data)
   
   
-  def ifdivide(data):  #
+  def ifdivide(data):  
       for i in range(data.shape[0]-2):
           for j in range(i, data.shape[0]-2):
               x1 = data[i, 0]
               y1 = data[i, 1]
               x2 = data[j, 0]
               y2 = data[j, 1]
-              if 0 < math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 3:  #
+              if 0 < math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 3:  
                   v1 = data[i+2, :]-data[i, :]
                   v2 = data[j+2, :]-data[j, :]
                   if abs(angle(v1)-angle(v2)) > math.pi/2:
@@ -644,7 +643,7 @@ Due to the limitation of single-Progress, our code can only run in a single proc
       return(np.array([0, 0]))
   
   
-  def drawline(data):  #
+  def drawline(data):  
       length = 0
       times = 0
       while True:
@@ -655,7 +654,7 @@ Due to the limitation of single-Progress, our code can only run in a single proc
               del data[len(data)-1]
               print('-')
               continue
-          index = ifdivide(temp)  #
+          index = ifdivide(temp)  
           if index[0] == 0 and index[1] == 0:
               data[-1] = draw(temp)
               print(times)
@@ -664,9 +663,9 @@ Due to the limitation of single-Progress, our code can only run in a single proc
                   length = length + \
                       math.sqrt((data[-1][j+1, 0]-data[-1][j, 0])**2 +
                                 (data[-1][j+1, 1]-data[-1][j, 1])**2)
-              # plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
-              # plt.show()
-              # plt.axis("equal")
+               plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
+               plt.show()
+               plt.axis("equal")
           else:
               data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
               data[-1] = np.row_stack((data[-1], data[-1][0:1, :]))
