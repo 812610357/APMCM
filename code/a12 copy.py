@@ -13,7 +13,7 @@ data = data0  # 从csv文件获取数据
 d = -0.1  # 精度
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
-list = list([])
+sheet = list([])
 times = 0
 length = 0
 
@@ -58,7 +58,7 @@ def draw(data):  # 画线
     temp = np.delete(temp, 0, axis=0)
     temp = iflong(temp)  # 同级点间距控制
     temp = ifcross(temp)  # 交叉控制
-    temp = ifwide(temp, data)  # 与上一级间距控制
+    temp = district(temp, data)  # 与上一级间距控制
     plt.plot(temp[:, 0], temp[:, 1], '-', color='r')
     return(temp)
 
@@ -77,19 +77,25 @@ def iflong(data):  # 同级点间距控制
 
 
 def district(data, last):
-    global list
+    global sheet
+    sheet = list([])
     max = multiprocessing.cpu_count()
-    n = data.shape[0]/max
+    if data.shape[0] % max < 100:
+        max = int(data.shape[0]/100)
+    n = int(data.shape[0]/max)
     for i in range(max-1):
-        list[i] = [data[n*i:n*(i+1)]]
-        threading.Thread(target=ifwide, args=(list[i], last, i,)).start()
-    list[max-1] = [data[n*i:n*(i+1)]]
-    threading.Thread(target=ifwide, args=(list[i], last, i,)).start()
-    pass
+        sheet.append(data[n*i:n*(i+1)])
+        threading.Thread(target=ifwide, args=(sheet[i], last, i,)).start()
+    sheet.append(data[max-1:data.shape[0]])
+    threading.Thread(target=ifwide, args=(sheet[max-1], last, max-1,)).start()
+    output = np.array(sheet[0])
+    for i in range(1, max):
+        output = np.row_stack(output, sheet[i])
+    return(output)
 
 
 def ifwide(data, last, k):  # 与上一级间距控制
-    global list
+    global sheet
     i = 0
     while i < data.shape[0]:  # 遍历该级所有数据
         j = 0
@@ -105,7 +111,7 @@ def ifwide(data, last, k):  # 与上一级间距控制
             else:
                 j += 1
         i += 1
-    list[k] = [data]
+    sheet[k] = [data]
     pass
 
 
