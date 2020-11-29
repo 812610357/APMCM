@@ -148,20 +148,15 @@ The signs and definitions are mostly generated from queuing theory.
   \item
   \item
 \end{itemize}
-\subsection{Methods used in our models}
+\subsection{Methods used in our algorithm}
 \begin{itemize}
   \item
   \item
   \item
   \item
 \end{itemize}
-\subsection{Applications of our models}
-\begin{itemize}
-  \item
-  \item
-  \item
-  \item
-\end{itemize}
+\subsection{Applications of our algorithm}
+The algorithm we proposed realizes the filling of two-dimensional closed curve polygons through zigzag hatching and contour parallel hatching. It is expected to be used in laser marking after further optimization. In addition, we will increase the dimensionality of the algorithm in future work to enable it to fill the three-dimensional closed space. This can open exciting perspectives for 3d printing, laser engraving, etc.
 \section{Future Work}
 \subsection{Ideas to solve existing problems}
 Zigzag, as the most common hatching method at present, has many sharp turns. For shapes with complex borders or hollow, this disadvantage will be very obvious.The contour parallel algorithm can avoid too many sharp turns, but it leads to more contours and the contours are not connected. For the problems of these two hatching methods, we can use the Fermat spiral filling used in 3D printing to solve it. The Fermat spiral consists of two intertwined sub-helices, one inward and the other outward. The Fermat spiral has three advantages:
