@@ -56,7 +56,7 @@ def drawborder(data):
             temp = np.row_stack((temp, new))
         i += 1
     temp = np.delete(temp, 0, axis=0)
-#    plt.plot(temp[:, 0], temp[:, 1], '-o', color='y', markersize=2)
+    # plt.plot(temp[:, 0], temp[:, 1], '-o', color='y', markersize=2)
     return(temp)
 
 
@@ -80,7 +80,7 @@ def getint(data):
                     new[0] = (new[1]-y1)/k+x1
                     temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
-#    plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
+    # plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
     return(temp)
 
 
@@ -150,6 +150,7 @@ def writecsv(data):
 
 def drawline(data):
     length = 0  # 画线总长
+    times = 0  # 平行线数量
     cl = ['r', 'g']
     for i in range(len(data)):
         line = np.array([0, 0])
@@ -171,8 +172,13 @@ def drawline(data):
             j = round(j + abs(d), 1)
         line = np.delete(line, 0, axis=0)
         plt.plot(line[:, 1], line[:, 0], '-', color=cl[i % 2])
+        times = times+int(line.shape[0]/2)
+        for j in range(line.shape[0]-1):
+            length = length + \
+                math.sqrt((line[j+1, 0]-line[j, 0])**2 +
+                          (line[j+1, 1]-line[j, 1])**2)
         i += 1
-    pass
+    return([length, times])
 
 
 data = drawborder(data)
@@ -180,22 +186,11 @@ data = getint(data)
 data = list([data])
 data = divide(data)
 writecsv(data)
-drawline(data)
-
-
-'''
-data = np.array(pd.read_csv(".\code\\area0.csv", header=0))
-data = list([data])
-data.append(np.array(pd.read_csv(".\code\\area1.csv", header=0)))
-data.append(np.array(pd.read_csv(".\code\\area2.csv", header=0)))
-data.append(np.array(pd.read_csv(".\code\\area3.csv", header=0)))
-data.append(np.array(pd.read_csv(".\code\\area4.csv", header=0)))
-data.append(np.array(pd.read_csv(".\code\\area5.csv", header=0)))
-drawline(data)
-'''
-
+data = drawline(data)
 
 end = time.thread_time()
-print('Running time: %s Seconds' % (end-start))
+print('Length of curve:         %s mm' % data[0])
+print('Number of parallel line: %s' % data[1])
+print('Running time:            %s Seconds' % (end-start))
 
 plt.show()

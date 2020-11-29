@@ -12,23 +12,9 @@ start = time.thread_time()
 
 data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
 data = data0  # 从csv文件获取数据
-d = -0.1
+d = -0.1  # 精度
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
-
-
-def findex(v1, v2):
-    x1 = v1[0]
-    y1 = v1[1]
-    x2 = (v1+v2)[0]
-    y2 = (v1+v2)[1]
-    if (x1 > 0 and x1 > x2) or (x1 < 0 and x1 < x2):
-        return(1)
-    else:
-        if(y1 > 0 and y1 > y2) or (y1 < 0 and y1 < y2):
-            return(2)
-        else:
-            return(0)
 
 
 def unit(v):  # 单位化
@@ -41,28 +27,6 @@ def angle(v):  # 取辐角
 
 def inangle(v1, v2):  # 向量夹角
     return(math.acos(round(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2)), 9)))
-
-
-def roc(v1, v2):  # 外接圆半径
-    x1 = v1[0]
-    y1 = v1[1]
-    x2 = v2[0]
-    y2 = v2[1]
-    if x1*y2 == x2*y1:
-        return(0)
-    else:
-        xc = ((y1+y2)*y1*y1+x1 ** 2*y2+x2 ** 2*y1)/(x1*y2-x2*y1)
-        yc = ((x1+x2)*x1*x2+y1 ** 2*x2+y2 ** 2*x1)/(x2*y1-x1*y2)
-        return(math.sqrt(xc ** 2+yc ** 2)/2)
-
-
-def icr(v1, v2):  # 内切圆半径
-    a = np.linalg.norm(v1)
-    b = np.linalg.norm(v2)
-    c = np.linalg.norm(v1+v2)
-    r = math.sqrt((a+b-c)*(a-b+c)*(-a+b+c)/(a+b+c))/2
-    theta = inangle(v1, v2)
-    return(r/math.sin(theta/2))
 
 
 def draw(data):
@@ -98,7 +62,7 @@ def draw(data):
         temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
     temp = iflong(temp)
-    #temp = ifcross(temp)
+    temp = ifcross(temp)
     temp = ifwide(temp, data)
     plt.plot(temp[:, 0], temp[:, 1], '-', color='r')
     return(temp)
@@ -126,7 +90,7 @@ def ifwide(data, last):
                 break
             if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:
                 data = np.delete(data, i, axis=0)
-                j -= 20
+                j -= 10
             else:
                 j += 1
         i += 1
@@ -157,7 +121,7 @@ def ifdivide(data):  # 判断区域划分
             y1 = data[i, 1]
             x2 = data[j, 0]
             y2 = data[j, 1]
-            if math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 3:
+            if 0 < math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 3:
                 v1 = data[i+2, :]-data[i, :]
                 v2 = data[j+2, :]-data[j, :]
                 if abs(angle(v1)-angle(v2)) > math.pi/2:
@@ -165,7 +129,9 @@ def ifdivide(data):  # 判断区域划分
     return(np.array([0, 0]))
 
 
-def area(data):
+def drawline(data):
+    length = 0
+    times = 0
     while True:
         temp = data[-1]
         if data[0].shape[0] < 10:
@@ -178,21 +144,29 @@ def area(data):
         if index[0] == 0 and index[1] == 0:
             data[-1] = draw(temp)
             print(1)
-            #plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
+            times += 1
+            for j in range(data[-1].shape[0]-1):
+                length = length + \
+                    math.sqrt((data[-1][j+1, 0]-data[-1][j, 0])**2 +
+                              (data[-1][j+1, 1]-data[-1][j, 1])**2)
+            # plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
             # plt.show()
             # plt.axis("equal")
         else:
             data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
+            data[-1] = np.row_stack((data[-1], data[-1][0:1, :]))
             temp1 = temp[0:math.floor(index[0])+1, :]
             temp2 = temp[math.floor(index[1]):temp.shape[0], :]
-            data[len(data)-2] = np.row_stack((temp1, temp2))
-    pass
+            data[-2] = np.row_stack((temp1, temp2))
+    return([length, times])
 
 
 data = list([data])
-area(data)
+data = drawline(data)
 
 end = time.thread_time()
-print('Running time: %s Seconds' % (end-start))
+print('Length of curve: %s mm' % data[0])
+print('Number of turns: %s' % data[1])
+print('Running time:    %s Seconds' % (end-start))
 
 plt.show()
