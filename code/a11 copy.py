@@ -213,7 +213,6 @@ plt.plot(data[:, 0], data[:, 1], '-', color='black')
 data = getint(data)
 data = list([data])
 data = divide(data)
-plt.show()
 data = drawline(data)
 
 end = time.thread_time()
