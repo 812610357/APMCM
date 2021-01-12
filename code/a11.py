@@ -196,3 +196,4 @@ print('Number of dots: %s' % dots)
 print('Running time:            %s Seconds' % (end-start))
 
 plt.show()
+'''欧总牛逼'''
