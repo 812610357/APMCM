@@ -48,6 +48,10 @@ def drawborder(data):  # 内缩一次
             new = data[i+1, :]+(unit(v2)-unit(v1))*u
         else:
             new = data[i+1, :]-(unit(v2)-unit(v1))*u
+        for j in range(0, data.shape[0]-2):
+            if np.linalg.norm(new-data[j, :]) < abs(d)*0.999:
+                k = 1
+                break
         if k == 0:
             temp = np.row_stack((temp, new))
         i += 1
@@ -179,7 +183,6 @@ def drawline(data):  # 画平行线
 
 
 data = drawborder(data)
-plt.plot(data[:, 0], data[:, 1], '-', color='black')
 data = getint(data)
 data = list([data])
 data = divide(data)

@@ -8,9 +8,9 @@ import time
 start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
-d = -1
+d = -0.1
 plt.axis("equal")
-plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
+plt.plot(data[:, 0], data[:, 1], '-o', markersize=3)
 dots = 0
 
 
@@ -209,10 +209,11 @@ def drawline(data):  # 画平行线
 
 
 data = drawborder(data)
-plt.plot(data[:, 0], data[:, 1], '-', color='black')
 data = getint(data)
+plt.plot(data[:, 0], data[:, 1], '-o', color='black', markersize=3)
 data = list([data])
 data = divide(data)
+# plt.show()
 data = drawline(data)
 
 end = time.thread_time()
