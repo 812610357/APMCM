@@ -25,37 +25,23 @@ def unit(v):  # 单位化
     return(v/np.linalg.norm(v))
 
 
-def angle(v):  # 取辐角
-    return(math.atan2(v[1], v[0]))
-
-
-def slope(v):  # 取斜率
-    return(v[1]/v[0])
-
-
-def der1(v1, v2):  # 一阶导
-    if (v1+v2)[0] == 0:
-        return(np.infty)
-    else:
-        return(((v1+v2)[1]/(v1+v2)[0]))
-
-
-def der2(v1, v2):  # 二阶导
-    if (v1+v2)[0] == 0:
-        return(np.infty)
-    else:
-        return(2*(slope(v2)-slope(v1))/(v1+v2)[0])
-
-
-def cur(v1, v2):  # 曲率半径
-    if der2(v1, v2) == 0:
-        return(np.infty)
-    else:
-        return(((1+der1(v1, v2))**(3/2))/der2(v1, v2))
-
-
 def inangle(v1, v2):  # 向量夹角
     return(math.acos(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2))))
+
+
+def cross(v1, v2):
+    return(v1[0]*v2[1]-v2[0]*v1[1])
+
+
+def ifcross(p1, p2, q1, q2):
+    v11 = q1-p1
+    v12 = q2-p1
+    v21 = q1-p2
+    v22 = q2-p2
+    if cross(v11, v12)*cross(v21, v22) < 0 and cross(v11, v21)*cross(v12, v22) < 0:
+        return(1)
+    else:
+        return(0)
 
 
 def drawborder(data):  # 内缩一次
@@ -65,23 +51,29 @@ def drawborder(data):  # 内缩一次
     times = data.shape[0]-2
     i = 0
     while i < times:
-        k = 0
         v1 = data[i+1, :]-data[i, :]
         v2 = data[i+2, :]-data[i+1, :]
-        '''
-        if abs(cur(v1, v2)) < -d:
-            i += 1
-            continue
-        '''
         u = d/(math.sin(inangle(v1, v2)))
-        if (angle(v2) > angle(v1) and not(angle(v2) > math.pi/2 and angle(v1) < -math.pi/2)) or (angle(v2) < -math.pi/2 and angle(v1) > math.pi/2):
+        if cross(v1, v2) > 0:
             new = data[i+1, :]+(unit(v2)-unit(v1))*u
         else:
             new = data[i+1, :]-(unit(v2)-unit(v1))*u
-        if k == 0:
-            temp = np.row_stack((temp, new))
+        temp = np.row_stack((temp, new))
         i += 1
     temp = np.delete(temp, 0, axis=0)
+    i = 0
+    while i < temp.shape[0]-3:
+        j = i
+        while j < temp.shape[0]-1:
+            if i == 603 and j == 1094:
+                a = 1
+            if ifcross(temp[i, :], temp[i+1, :], temp[j, :], temp[j+1, :]):
+                #np.delete(temp, (np.linspace(i, j+1, num=j-i+2)), axis=0)
+                temp = np.row_stack((temp[0:i, :], temp[j+1:, :]))
+                continue
+            else:
+                j += 1
+        i += 1
     # plt.plot(temp[:, 0], temp[:, 1], '-o', color='y', markersize=2)
     return(temp)
 
@@ -209,8 +201,8 @@ def drawline(data):  # 画平行线
 
 
 data = drawborder(data)
-data = getint(data)
 plt.plot(data[:, 0], data[:, 1], '-o', color='black', markersize=3)
+data = getint(data)
 data = list([data])
 data = divide(data)
 # plt.show()

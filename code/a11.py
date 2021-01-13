@@ -10,7 +10,7 @@ start = time.thread_time()
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
 d = -0.1
 plt.axis("equal")
-plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
+plt.plot(data[:, 0], data[:, 1], '-o', markersize=3)
 dots = 0
 
 
@@ -25,12 +25,23 @@ def unit(v):  # 单位化
     return(v/np.linalg.norm(v))
 
 
-def angle(v):  # 取辐角
-    return(math.atan2(v[1], v[0]))
-
-
 def inangle(v1, v2):  # 向量夹角
     return(math.acos(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2))))
+
+
+def cross(v1, v2):
+    return(v1[0]*v2[1]-v2[0]*v1[1])
+
+
+def ifcross(p1, p2, q1, q2):
+    v11 = q1-p1
+    v12 = q2-p1
+    v21 = q1-p2
+    v22 = q2-p2
+    if cross(v11, v12)*cross(v21, v22) < 0 and cross(v11, v21)*cross(v12, v22) < 0:
+        return(1)
+    else:
+        return(0)
 
 
 def drawborder(data):  # 内缩一次
@@ -40,22 +51,29 @@ def drawborder(data):  # 内缩一次
     times = data.shape[0]-2
     i = 0
     while i < times:
-        k = 0
         v1 = data[i+1, :]-data[i, :]
         v2 = data[i+2, :]-data[i+1, :]
         u = d/(math.sin(inangle(v1, v2)))
-        if (angle(v2) > angle(v1) and not(angle(v2) > math.pi/2 and angle(v1) < -math.pi/2)) or (angle(v2) < -math.pi/2 and angle(v1) > math.pi/2):
+        if cross(v1, v2) > 0:
             new = data[i+1, :]+(unit(v2)-unit(v1))*u
         else:
             new = data[i+1, :]-(unit(v2)-unit(v1))*u
-        for j in range(0, data.shape[0]-2):
-            if np.linalg.norm(new-data[j, :]) < abs(d)*0.999:
-                k = 1
-                break
-        if k == 0:
-            temp = np.row_stack((temp, new))
+        temp = np.row_stack((temp, new))
         i += 1
     temp = np.delete(temp, 0, axis=0)
+    i = 0
+    while i < temp.shape[0]-3:
+        j = i
+        while j < temp.shape[0]-1:
+            if i == 603 and j == 1094:
+                a = 1
+            if ifcross(temp[i, :], temp[i+1, :], temp[j, :], temp[j+1, :]):
+                #np.delete(temp, (np.linspace(i, j+1, num=j-i+2)), axis=0)
+                temp = np.row_stack((temp[0:i, :], temp[j+1:, :]))
+                continue
+            else:
+                j += 1
+        i += 1
     # plt.plot(temp[:, 0], temp[:, 1], '-o', color='y', markersize=2)
     return(temp)
 
@@ -139,12 +157,10 @@ def divide(data):  # 获得分割区域，并导入序列
     return(data)
 
 
-def writecsv(data):
-    for i in range(len(data)):
-        area = data[i]
-        dataframe = pd.DataFrame(data={'x': area[:, 0], 'y': area[:, 1]})
-        dataframe.to_csv(f".\code\\zigzag{i+1}.csv",
-                         index=False, mode='w', sep=',')
+def writecsv(data, num):  # 导出线条
+    dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
+    dataframe.to_csv(f".\code\\zigzag{num}.csv",
+                     index=False, mode='w', sep=',')
     pass
 
 
@@ -171,7 +187,9 @@ def drawline(data):  # 画平行线
                 line = np.row_stack((line, [j, max(temp)]))
             j = round(j + abs(d), 1)
         line = np.delete(line, 0, axis=0)
-        plt.plot(line[:, 1], line[:, 0], '-', color='r')
+        line = np.column_stack((line[:, 1], line[:, 0]))
+        writecsv(line, i)
+        plt.plot(line[:, 0], line[:, 1], '-', color='r')
         times = times+int(line.shape[0]/2)
         for j in range(line.shape[0]-1):
             length = length + \
@@ -183,10 +201,10 @@ def drawline(data):  # 画平行线
 
 
 data = drawborder(data)
+plt.plot(data[:, 0], data[:, 1], '-o', color='black', markersize=3)
 data = getint(data)
 data = list([data])
 data = divide(data)
-writecsv(data)
 data = drawline(data)
 
 end = time.thread_time()
@@ -196,7 +214,3 @@ print('Number of dots: %s' % dots)
 print('Running time:            %s Seconds' % (end-start))
 
 plt.show()
-'''欧总牛逼'''
-
-
-'''老祖好猛'''
