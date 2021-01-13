@@ -29,7 +29,7 @@ def inangle(v1, v2):  # 向量夹角
     return(math.acos(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2))))
 
 
-def cross(v1, v2):
+def cross(v1, v2):  # 平面内向量叉乘
     return(v1[0]*v2[1]-v2[0]*v1[1])
 
 
