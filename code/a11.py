@@ -10,7 +10,7 @@ start = time.thread_time()
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
 d = -1
 plt.axis("equal")
-plt.plot(data[:, 0], data[:, 1], '-o', markersize=3)
+plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 dots = 0
 
 
