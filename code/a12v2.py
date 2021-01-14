@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.core.defchararray import array
 import pandas as pd
 import math
 import time
