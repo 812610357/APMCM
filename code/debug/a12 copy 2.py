@@ -170,19 +170,22 @@ def drawline(data):  # 判断是否需要分割
             continue
         index = ifdivide(temp)  # 分割点序号
         if index[0] == 0 and index[1] == 0:
-            times += 1
-            temp = delcross(temp)
+            if times > 0:
+                temp = delcross(temp)
+                writecsv(temp)
+            plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=3)
             data[-1] = draw(temp)
+            times += 1
             print(times)
             for j in range(data[-1].shape[0]-1):
                 length = length + \
                     math.sqrt((data[-1][j+1, 0]-data[-1][j, 0])**2 +
                               (data[-1][j+1, 1]-data[-1][j, 1])**2)
-            '''
+
             plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
             plt.show()
             plt.axis("equal")
-            '''
+
         else:
             data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
             data[-1] = np.row_stack((data[-1], data[-1][0:1, :]))
