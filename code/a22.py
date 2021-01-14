@@ -1,5 +1,9 @@
+import matplotlib.pyplot as plt
 import numpy as np
+from numpy.core.fromnumeric import argmax, argmin #返回最大或最小值对应的序号
 import pandas as pd
+import math
+import time
 
 data = list([])
 for i in range(1, 5):
