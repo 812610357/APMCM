@@ -8,9 +8,9 @@ import time
 start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
-d = -0.1
+d = -1
 plt.axis("equal")
-plt.plot(data[:, 0], data[:, 1], '-o', markersize=3)
+plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 dots = 0
 
 
@@ -65,16 +65,12 @@ def drawborder(data):  # 内缩一次
     while i < temp.shape[0]-3:
         j = i
         while j < temp.shape[0]-1:
-            if i == 603 and j == 1094:
-                a = 1
             if ifcross(temp[i, :], temp[i+1, :], temp[j, :], temp[j+1, :]):
-                #np.delete(temp, (np.linspace(i, j+1, num=j-i+2)), axis=0)
                 temp = np.row_stack((temp[0:i, :], temp[j+1:, :]))
                 continue
             else:
                 j += 1
         i += 1
-    # plt.plot(temp[:, 0], temp[:, 1], '-o', color='y', markersize=2)
     return(temp)
 
 
@@ -98,7 +94,6 @@ def getint(data):  # 按精度离散化
                     new[0] = (new[1]-y1)/k+x1
                     temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
-    # plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
     return(temp)
 
 
@@ -188,7 +183,7 @@ def drawline(data):  # 画平行线
             j = round(j + abs(d), 1)
         line = np.delete(line, 0, axis=0)
         line = np.column_stack((line[:, 1], line[:, 0]))
-        writecsv(line, i)
+        writecsv(line, i+1)
         plt.plot(line[:, 0], line[:, 1], '-', color='r')
         times = times+int(line.shape[0]/2)
         for j in range(line.shape[0]-1):
@@ -201,17 +196,15 @@ def drawline(data):  # 画平行线
 
 
 data = drawborder(data)
-plt.plot(data[:, 0], data[:, 1], '-o', color='black', markersize=3)
 data = getint(data)
 data = list([data])
 data = divide(data)
-# plt.show()
 data = drawline(data)
 
 end = time.thread_time()
 print('Length of curve:         %s mm' % data[0])
 print('Number of parallel line: %s' % data[1])
-print('Number of dots: %s' % dots)
+print('Number of dots:          %s' % dots)
 print('Running time:            %s Seconds' % (end-start))
 
 plt.show()

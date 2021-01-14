@@ -1,14 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.core.defchararray import array
 import pandas as pd
 import math
 import time
 
 start = time.thread_time()
 
-data0 = np.array(pd.read_csv(".\code\debug\graph1.csv", header=0))
+data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
 data = data0  # 从csv文件获取数据
-d = -0.1  # 精度
+d = -1  # 精度
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 dots = 0
@@ -45,6 +46,7 @@ def ifcross(p1, p2, q1, q2):
 def delcross(temp):
     i = 0
     while i < temp.shape[0]-3:
+        global times
         j = i
         while j < i+(temp.shape[0]-i)//4:
             if ifcross(temp[i, :], temp[i+1, :], temp[j, :], temp[j+1, :]):
@@ -84,14 +86,8 @@ def draw(data):  # 画等高线
         temp = np.row_stack((temp, new))
         dots += 1
     temp = np.delete(temp, 0, axis=0)
-
-    temp = iflong(temp)  # 同级点间距控制
-    '''
-    temp = ifcross(temp)  # 交叉控制
-    '''
     temp = ifwide(temp, data)  # 与上一级间距控制
-    writecsv(temp)
-    plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=3)
+    temp = iflong(temp)  # 同级点间距控制
     return(temp)
 
 
@@ -111,35 +107,21 @@ def iflong(data):  # 同级点间距控制
 def ifwide(data, last):  # 与上一级间距控制
     i = 0
     while i < data.shape[0]:  # 遍历该级所有数据
-        j = 0
-        while j < last.shape[0]:  # 遍历上级所有数据
-            if i >= data.shape[0]:
-                break
+        j = max([0, i-20])
+        while j < min(last.shape[0], i+20):  # 遍历上级部分数据
             if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:  # 小于一个精度的直接删除
-                data = np.delete(data, i, axis=0)
-                if j > 20:
-                    j -= 20
-                else:
-                    j = 0
+                data[i] = [0, 0]
+                break
             else:
                 j += 1
         i += 1
-    return(data)
-
-
-'''
-def ifcross(data):  # 交叉控制
     i = 0
-    while i < data.shape[0]-3:  # 遍历该级所有数据
-        v1 = data[i+1, :]-data[i, :]
-        v2 = data[i+2, :]-data[i+1, :]
-        v3 = data[i+3, :]-data[i+2, :]
-        if inangle(v1, v2)+inangle(v2, v3) > math.pi:  # 连续三个向量转角超过180度直接删除
-            data = np.delete(data, [i+1, i+2], axis=0)
-        else:
-            i += 1
+    while i < data.shape[0]:
+        if data[i, 0] == data[i, 1] == 0:
+            data = np.delete(data, i, axis=0)
+            continue
+        i += 1
     return(data)
-'''
 
 
 def ifdivide(data):  # 判断区域划分
@@ -162,9 +144,10 @@ def drawline(data):  # 判断是否需要分割
     global times
     while True:
         temp = data[-1]
-        if data[0].shape[0] < 10:
+        if data[0].shape[0] < 12:
+            writecsv(temp)
             break
-        if temp.shape[0] < 10:
+        if temp.shape[0] < 12:
             del data[len(data)-1]
             print('-')
             continue
@@ -173,7 +156,7 @@ def drawline(data):  # 判断是否需要分割
             if times > 0:
                 temp = delcross(temp)
                 writecsv(temp)
-            plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=3)
+                plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=3)
             data[-1] = draw(temp)
             times += 1
             print(times)
@@ -181,11 +164,6 @@ def drawline(data):  # 判断是否需要分割
                 length = length + \
                     math.sqrt((data[-1][j+1, 0]-data[-1][j, 0])**2 +
                               (data[-1][j+1, 1]-data[-1][j, 1])**2)
-
-            plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
-            plt.show()
-            plt.axis("equal")
-
         else:
             data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
             data[-1] = np.row_stack((data[-1], data[-1][0:1, :]))
@@ -198,7 +176,7 @@ def drawline(data):  # 判断是否需要分割
 def writecsv(data):
     global times
     dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
-    dataframe.to_csv(f".\code\debug\contour{times}.csv",
+    dataframe.to_csv(f".\code\contour{times}.csv",
                      index=False, mode='w', sep=',')
     pass
 
@@ -209,7 +187,7 @@ data = drawline(data)
 end = time.thread_time()
 print('Length of curve: %s mm' % data[0])
 print('Number of turns: %s' % data[1])
-print('Number of dots: %s' % dots)
+print('Number of dots:  %s' % dots)
 print('Running time:    %s Seconds' % (end-start))
 
 plt.show()
