@@ -42,6 +42,20 @@ def ifcross(p1, p2, q1, q2):
         return(0)
 
 
+def delcross(temp):
+    i = 0
+    while i < temp.shape[0]-3:
+        j = i
+        while j < temp.shape[0]-1:
+            if ifcross(temp[i, :], temp[i+1, :], temp[j, :], temp[j+1, :]):
+                temp = np.row_stack((temp[0:i, :], temp[j+1:, :]))
+                continue
+            else:
+                j += 1
+        i += 1
+    return(temp)
+
+
 def draw(data):  # 画等高线
     global dots
     data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
@@ -70,16 +84,7 @@ def draw(data):  # 画等高线
         temp = np.row_stack((temp, new))
         dots += 1
     temp = np.delete(temp, 0, axis=0)
-    i = 0
-    while i < temp.shape[0]-3:
-        j = i
-        while j < temp.shape[0]-1:
-            if ifcross(temp[i, :], temp[i+1, :], temp[j, :], temp[j+1, :]):
-                temp = np.row_stack((temp[0:i, :], temp[j+1:, :]))
-                continue
-            else:
-                j += 1
-        i += 1
+
     temp = iflong(temp)  # 同级点间距控制
     '''
     temp = ifcross(temp)  # 交叉控制
@@ -159,24 +164,25 @@ def drawline(data):  # 判断是否需要分割
         temp = data[-1]
         if data[0].shape[0] < 10:
             break
-        if temp.shape[0] < 50:
+        if temp.shape[0] < 10:
             del data[len(data)-1]
             print('-')
             continue
         index = ifdivide(temp)  # 分割点序号
         if index[0] == 0 and index[1] == 0:
             times += 1
+            temp = delcross(temp)
             data[-1] = draw(temp)
             print(times)
             for j in range(data[-1].shape[0]-1):
                 length = length + \
                     math.sqrt((data[-1][j+1, 0]-data[-1][j, 0])**2 +
                               (data[-1][j+1, 1]-data[-1][j, 1])**2)
-            '''
+
             plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
             plt.show()
             plt.axis("equal")
-            '''
+
         else:
             data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
             data[-1] = np.row_stack((data[-1], data[-1][0:1, :]))
