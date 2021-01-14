@@ -9,7 +9,7 @@ start = time.thread_time()
 
 data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
 data = data0  # 从csv文件获取数据
-d = -0.1  # 精度
+d = -1  # 精度
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 dots = 0
@@ -171,17 +171,16 @@ def drawline(data):  # 判断是否需要分割
     global times
     while True:
         temp = data[-1]
-        if data[0].shape[0] < 10:
+        if data[0].shape[0] < 12:
+            writecsv(temp)
             break
-        if temp.shape[0] < 10:
+        if temp.shape[0] < 12:
             del data[len(data)-1]
             print('-')
             continue
         index = ifdivide(temp)  # 分割点序号
         if index[0] == 0 and index[1] == 0:
             if times > 0:
-                if times == 31:
-                    print("haha")
                 temp = delcross(temp)
                 writecsv(temp)
                 plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=3)
