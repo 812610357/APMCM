@@ -46,7 +46,7 @@ def delcross(temp):
     i = 0
     while i < temp.shape[0]-3:
         j = i
-        while j < temp.shape[0]-1:
+        while j < i+(temp.shape[0]-i)//4:
             if ifcross(temp[i, :], temp[i+1, :], temp[j, :], temp[j+1, :]):
                 temp = np.row_stack((temp[0:i, :], temp[j+1:, :]))
                 continue
@@ -178,11 +178,11 @@ def drawline(data):  # 判断是否需要分割
                 length = length + \
                     math.sqrt((data[-1][j+1, 0]-data[-1][j, 0])**2 +
                               (data[-1][j+1, 1]-data[-1][j, 1])**2)
-
+            '''
             plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
             plt.show()
             plt.axis("equal")
-
+            '''
         else:
             data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
             data[-1] = np.row_stack((data[-1], data[-1][0:1, :]))

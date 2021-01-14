@@ -90,8 +90,6 @@ def draw(data):  # 画等高线
     temp = ifcross(temp)  # 交叉控制
     '''
     temp = ifwide(temp, data)  # 与上一级间距控制
-    writecsv(temp)
-    plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=3)
     return(temp)
 
 
@@ -172,6 +170,8 @@ def drawline(data):  # 判断是否需要分割
         if index[0] == 0 and index[1] == 0:
             times += 1
             temp = delcross(temp)
+            writecsv(temp)
+            plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=3)
             data[-1] = draw(temp)
             print(times)
             for j in range(data[-1].shape[0]-1):
