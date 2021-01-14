@@ -8,7 +8,7 @@ import time
 start = time.thread_time()
 
 data = np.array(pd.read_csv(".\code\graph1.csv", header=2))  # 从csv文件获取数据
-d = -0.1
+d = -1
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=3)
 dots = 0
@@ -65,10 +65,7 @@ def drawborder(data):  # 内缩一次
     while i < temp.shape[0]-3:
         j = i
         while j < temp.shape[0]-1:
-            if i == 603 and j == 1094:
-                a = 1
             if ifcross(temp[i, :], temp[i+1, :], temp[j, :], temp[j+1, :]):
-                #np.delete(temp, (np.linspace(i, j+1, num=j-i+2)), axis=0)
                 temp = np.row_stack((temp[0:i, :], temp[j+1:, :]))
                 continue
             else:

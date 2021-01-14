@@ -8,7 +8,7 @@ start = time.thread_time()
 
 data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
 data = data0  # 从csv文件获取数据
-d = -1  # 精度
+d = -0.1  # 精度
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
 dots = 0
@@ -31,6 +31,17 @@ def cross(v1, v2):  # 平面内向量叉乘
     return(v1[0]*v2[1]-v2[0]*v1[1])
 
 
+def ifcross(p1, p2, q1, q2):
+    v11 = q1-p1
+    v12 = q2-p1
+    v21 = q1-p2
+    v22 = q2-p2
+    if cross(v11, v12)*cross(v21, v22) < 0 and cross(v11, v21)*cross(v12, v22) < 0:
+        return(1)
+    else:
+        return(0)
+
+
 def draw(data):  # 画等高线
     global dots
     data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
@@ -42,7 +53,7 @@ def draw(data):  # 画等高线
         v2 = data[i+2, :]-data[i+1, :]
         if 0 < inangle(v1, v2) < math.pi*0.9:  # 一般情况在菱形中使用向量得到内缩点
             u = d/(math.sin(inangle(v1, v2)))
-            if (angle(v2) > angle(v1) and not(angle(v2) > math.pi/2 and angle(v1) < -math.pi/2)) or (angle(v2) < -math.pi/2 and angle(v1) > math.pi/2):
+            if cross(v1, v2) > 0:
                 new = data[i+1, :]+(unit(v2)-unit(v1))*u
             else:
                 new = data[i+1, :]-(unit(v2)-unit(v1))*u
@@ -59,11 +70,23 @@ def draw(data):  # 画等高线
         temp = np.row_stack((temp, new))
         dots += 1
     temp = np.delete(temp, 0, axis=0)
+    i = 0
+    while i < temp.shape[0]-3:
+        j = i
+        while j < temp.shape[0]-1:
+            if ifcross(temp[i, :], temp[i+1, :], temp[j, :], temp[j+1, :]):
+                temp = np.row_stack((temp[0:i, :], temp[j+1:, :]))
+                continue
+            else:
+                j += 1
+        i += 1
     temp = iflong(temp)  # 同级点间距控制
+    '''
     temp = ifcross(temp)  # 交叉控制
+    '''
     temp = ifwide(temp, data)  # 与上一级间距控制
     writecsv(temp)
-    plt.plot(temp[:, 0], temp[:, 1], '-', color='r')
+    plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=3)
     return(temp)
 
 
@@ -99,6 +122,7 @@ def ifwide(data, last):  # 与上一级间距控制
     return(data)
 
 
+'''
 def ifcross(data):  # 交叉控制
     i = 0
     while i < data.shape[0]-3:  # 遍历该级所有数据
@@ -110,6 +134,7 @@ def ifcross(data):  # 交叉控制
         else:
             i += 1
     return(data)
+'''
 
 
 def ifdivide(data):  # 判断区域划分
@@ -134,7 +159,7 @@ def drawline(data):  # 判断是否需要分割
         temp = data[-1]
         if data[0].shape[0] < 10:
             break
-        if temp.shape[0] < 10:
+        if temp.shape[0] < 50:
             del data[len(data)-1]
             print('-')
             continue
@@ -147,9 +172,11 @@ def drawline(data):  # 判断是否需要分割
                 length = length + \
                     math.sqrt((data[-1][j+1, 0]-data[-1][j, 0])**2 +
                               (data[-1][j+1, 1]-data[-1][j, 1])**2)
-            # plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
-            # plt.show()
-            # plt.axis("equal")
+            '''
+            plt.plot(data0[:, 0], data0[:, 1], '-o', color='b', markersize=1)
+            plt.show()
+            plt.axis("equal")
+            '''
         else:
             data.append(temp[math.floor(index[0])+1: math.floor(index[1]), :])
             data[-1] = np.row_stack((data[-1], data[-1][0:1, :]))
