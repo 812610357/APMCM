@@ -38,7 +38,7 @@ def divide(data):
             elif _max(i, 0, data) > _max(j, 0, data) and _min(i, 0, data) > _min(j, 0, data):
                 # 同级不管
                 continue
-            return sto
+            return(sto)
 
 
 print(divide(data))
