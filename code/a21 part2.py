@@ -158,7 +158,7 @@ def divide(data, index, parent):
                         line = stackline(data_out, data_in,
                                          divide_out, divide_in)
                         data_out = line[0]
-                        temp.appand(line[1])
+                        temp.append(line[1])
                 temp.append(data_out)
     return(temp)
 
