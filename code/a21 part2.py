@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.core.fromnumeric import argmax, argmin  # 返回最大或最小值对应的序号
 import pandas as pd
 import math
 import time
+
+start = time.thread_time()
 
 plt.axis("equal")
 d = -1
@@ -134,6 +135,14 @@ def divideout(data_out, data_in, divide_in):
     return(divide_out)
 
 
+def stackline(data_out, data_in, divide_out, divide_in):
+    temp1 = np.row_stack(
+        (data_out[:divide_out[0]+1], data_in[divide_in[0]:divide_in[1]+1], data_out[divide_out[1]:]))
+    temp2 = np.row_stack(
+        (data_in[:divide_in[0]], data_out[divide_out[0]+1:divide_out[1]], data_in[divide_in[1]+1:]))
+    return(list([temp1, temp2]))
+
+
 def divide(data, index, parent):
     temp = list([])
     for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
@@ -146,8 +155,11 @@ def divide(data, index, parent):
                         divide_in = np.array(  # 内层分割点
                             [np.min(index[k][0, :]), np.max(index[k][1, :])])
                         divide_out = divideout(data_out, data_in, divide_in)
-                        stackline(data_out, data_out, divide_in, divide_out)
-
+                        line = stackline(data_out, data_in,
+                                         divide_out, divide_in)
+                        data_out = line[0]
+                        temp.appand(line[1])
+                temp.append(data_out)
     return(temp)
 
 
