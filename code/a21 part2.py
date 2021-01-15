@@ -119,17 +119,35 @@ def findm(data):
     return(index)
 
 
+def divideout(data_out, data_in, divide_in):
+    ym = np.array([data_in[divide_in[0], 1],
+                   data_in[divide_in[1], 1]], dtype='int16')
+    divide_out = np.array([], dtype='int16')
+    for i in range(data_out.shape[0]):
+        if data_out[i, 1] == ym[0] and data_out[i, 0] > data_in[divide_in[0], 0]:
+            divide_out = np.append(divide_out, [i], axis=0)
+            break
+    for i in range(data_out.shape[0]):
+        if data_out[i, 1] == ym[1] and data_out[i, 0] > data_in[divide_in[0], 0]:
+            divide_out = np.append(divide_out, [i], axis=0)
+            break
+    return(divide_out)
+
+
 def divide(data, index, parent):
     temp = list([])
     for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
         for j in range(parent.shape[0]):  # 搜索 i 层的外边界
             if parent[j, 1] == 2*i-1:
+                data_out = data[j]
                 for k in range(parent.shape[0]):  # 搜索 j 作为外边界的对应内边界
                     if parent[k, 0] == j:
-                        indexmax = np.min(index[k][0, :])
-                        indexmin = np.max(index[k][1, :])
-                        ymax = data[k][indexmax, 1]
-                        ymin = data[k][indexmin, 1]
+                        data_in = data[k]
+                        divide_in = np.array(  # 内层分割点
+                            [np.min(index[k][0, :]), np.max(index[k][1, :])])
+                        divide_out = divideout(data_out, data_in, divide_in)
+                        stackline(data_out, data_out, divide_in, divide_out)
+
     return(temp)
 
 
