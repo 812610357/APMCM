@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.core.fromnumeric import argmax, argmin
 import pandas as pd
 import math
 import time
@@ -174,11 +173,11 @@ def drawline(data):  # 画平行线
             temp = area[index, 0]
             if round(j/abs(d)) % 2:
                 line = np.row_stack((line, [j, min(temp)]))
-                temp = np.delete(temp, argmin(temp))
+                temp = np.delete(temp, np.argmin(temp))
                 line = np.row_stack((line, [j, min(temp)]))
             else:
                 line = np.row_stack((line, [j, max(temp)]))
-                temp = np.delete(temp, argmax(temp))
+                temp = np.delete(temp, np.argmax(temp))
                 line = np.row_stack((line, [j, max(temp)]))
             j = round(j + abs(d), 1)
         line = np.delete(line, 0, axis=0)
