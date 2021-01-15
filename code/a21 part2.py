@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.core.fromnumeric import argmax, argmin  # 返回最大或最小值对应的序号
+from numpy.core.defchararray import index
+from numpy.core.fromnumeric import argmax, argmin
+from numpy.lib.function_base import append  # 返回最大或最小值对应的序号
 import pandas as pd
 import math
 import time
@@ -96,17 +98,39 @@ def getint(data):  # 按精度离散化
     return(temp)
 
 
-'''
+def findmax(data):
+    index = np.array([])
+    for i in range(data.shape[0]-1):
+        if data[i, 1] >= data[i-1, 1] and data[i, 1] >= data[i-1, 1]:
+            index = np.append(index, i, axis=0)
+    return(index)
+
+
+def findmin(data):
+    index = np.array([])
+    for i in range(data.shape[0]-1):
+        if data[i, 1] <= data[i-1, 1] and data[i, 1] <= data[i-1, 1]:
+            index = np.append(index, i, axis=0)
+    return(index)
+
+
+def findm(data):
+    index = list([])
+    for i in range(len(data)):
+        index.append(np.array[findmax(data[i]), findmin(data[i])])
+    return(index)
+
+
 for i in range(len(data)):
     data[i] = drawborder(data[i])
     data[i] = getint(data[i])
-'''
 for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
     for j in range(parent.shape[0]):  # 搜索 i 层的外边界
         if parent[j, 1] == 2*i-1:
             for k in range(parent.shape[0]):  # 搜索 j 作为外边界的对应内边界
                 if parent[k, 0] == j:
                     a = np.argmax(data[k][:, 1])
+                    b = np.argmin(data[k][:, 1])
 
 
 parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])  # [父级，层级]
