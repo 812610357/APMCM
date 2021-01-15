@@ -9,9 +9,8 @@ start = time.thread_time()
 
 plt.axis("equal")
 d = -0.1
-data = list([])
+path = ".\code\graph2.csv"
 
-#parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])
 
 '''
 第一部分
@@ -37,9 +36,11 @@ def range_judge(i, j, data):
 
 def findparent(data):
     # parent[本名][0（爹名），1（继承数）]
-    parent = list([[-1, 1], [-1, 1], [-1, 1], [-1, 1]])
-    for i in range(0, 4):  # i,j都是爹名字 ，然后开始找爹
-        for j in range(i+1, 4):
+    parent = list([])
+    for i in range(len(data)):
+        parent.append([-1, 1])
+    for i in range(0, len(data)):  # i,j都是爹名字 ，然后开始找爹
+        for j in range(i+1, len(data)):
             if range_judge(i, j, data) != -2:  # 每两个人只会比较一次
                 small_name = range_judge(i, j, data)
                 big_name = (i if j == small_name else j)
@@ -332,7 +333,12 @@ def drawline(data):  # 画平行线
     return([length, times, dots])
 
 
-data = readcsv(".\code\graph2.csv")
+'''
+主函数
+'''
+
+
+data = readcsv(path)
 for i in range(len(data)):
     data[i] = drawborder(data[i])
     data[i] = getint(data[i])
