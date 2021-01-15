@@ -3,10 +3,16 @@ import numpy as np
 import pandas as pd
 import math
 import time
+
 data = list([])
-for i in range(1, 5):
-    data.append(np.array(pd.read_csv(
-        f".\code\graph2{i}.csv", header=2)))  # 从csv文件获取数据
+data0 = pd.read_csv(
+    f".\code\graph2.csv", index_col=False, header=2)
+j = 0
+for i in range(len(data0.values)):
+    if "MainCurve" in data0.values[i, 0]:
+        data += list([np.array(data0.values[j:i, :], dtype='float64')])
+        j = i+2
+data += list([np.array(data0.values[j:len(data0.values), :], dtype='float64')])
 
 n = len(data)
 for i in range(0, 4):
