@@ -152,7 +152,7 @@ def findmin(data):
     return(index)
 
 
-def findm(data):
+def findm(data):  # 获取极值序号
     index = list([])
     for i in range(len(data)):
         index.append(np.array([findmax(data[i]), findmin(data[i])]))
@@ -341,7 +341,7 @@ if __name__ == '__main__':
         data[i] = drawborder(data[i])
         data[i] = getint(data[i])
     parent = np.array(findparent(data))
-    index = findm(data)  # 获取极值序号
+    index = findm(data)
     data = divide1(data, index, parent)
     index = findm(data)
     data = divide2(data, index)
