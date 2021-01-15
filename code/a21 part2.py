@@ -14,7 +14,7 @@ for i in range(1, 5):
     data.append(np.array(pd.read_csv(
         f".\code\graph2{i}.csv", header=2)))  # 从csv文件获取数据
     plt.plot(data[i-1][:, 0], data[i-1][:, 1], '-o', color='b', markersize=1)
-
+dots = 0
 parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])
 
 
@@ -171,7 +171,7 @@ def divideline(data, index):
         for i in index[n]:
             judge = 0
             j = i-2
-            while j > -1:
+            while j > -0.02*data.shape[0]:
                 if data[j, 1] == data[i, 1]:
                     judge += 1
                     break
@@ -179,7 +179,7 @@ def divideline(data, index):
             if judge == 0:
                 continue
             k = i+2
-            while k < data.shape[0]:
+            while k < 0.98*data.shape[0]:
                 if data[k, 1] == data[i, 1]:
                     judge += 1
                     break
@@ -192,20 +192,6 @@ def divideline(data, index):
                 line = np.row_stack((line, [i, k]))
     line = np.delete(line, 0, axis=0)
     return(line)
-
-
-'''
-def orderline(line):
-    temp = np.array([0, 0, 0])
-    while line.shape[0]:
-        lowest = np.argmin(line[:, 0])
-        temp = np.row_stack((temp, line[lowest]))
-        line = np.delete(line, lowest, axis=0)
-    temp = np.delete(temp, 0, axis=0)
-    temp = np.delete(temp, 0, axis=1)
-    temp = np.array(temp, dtype='int64')
-    return(temp)
-'''
 
 
 def dividesub(data, line):
@@ -238,12 +224,52 @@ def divide2(data, index):
     temp = list([])
     for i in range(len(data)):
         if index[i].shape[1] > 1:
-            subdata = data[i]
-            subtemp = list([])
-            line = divideline(subdata, index[i])
-            dividesub(subdata, line)
-
+            line = divideline(data[i], index[i])
+            temp += dividesub(data[i], line)
+        else:
+            temp += list([data[i]])
     return(temp)
+
+
+def writecsv(data, num):  # 导出线条
+    dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
+    dataframe.to_csv(f".\code\\zigzag{num}.csv",
+                     index=False, mode='w', sep=',')
+    pass
+
+
+def drawline(data):  # 画平行线
+    global dots
+    length = 0  # 画线总长
+    times = 0  # 平行线数量
+    for i in range(len(data)):
+        line = np.array([0, 0])
+        area = data[i]
+        maxy = round(max(area[:, 1]), 1)
+        miny = round(min(area[:, 1]), 1)
+        j = miny
+        while j <= maxy:
+            index = (np.where(area == j))[0]
+            temp = area[index, 0]
+            if round(j/abs(d)+1) % 2:
+                line = np.row_stack((line, [j, min(temp)]))
+                line = np.row_stack((line, [j, max(temp)]))
+            else:
+                line = np.row_stack((line, [j, max(temp)]))
+                line = np.row_stack((line, [j, min(temp)]))
+            j = round(j + abs(d), 1)
+        line = np.delete(line, 0, axis=0)
+        line = np.column_stack((line[:, 1], line[:, 0]))
+        writecsv(line, i+1)
+        plt.plot(line[:, 0], line[:, 1], '-', color='r')
+        times = times+int(line.shape[0]/2)
+        for j in range(line.shape[0]-1):
+            length = length + \
+                math.sqrt((line[j+1, 0]-line[j, 0])**2 +
+                          (line[j+1, 1]-line[j, 1])**2)
+            dots += 1
+        i += 1
+    return([length, times])
 
 
 for i in range(len(data)):
@@ -253,11 +279,12 @@ index = findm(data)  # 获取极值序号
 data = divide1(data, index, parent)
 index = findm(data)
 data = divide2(data, index)
+data = drawline(data)
 
+end = time.thread_time()
+print('Length of curve:         %s mm' % data[0])
+print('Number of parallel line: %s' % data[1])
+print('Number of dots:          %s' % dots)
+print('Running time:            %s Seconds' % (end-start))
 
-for i in range(len(data)):
-    plt.plot(data[i][:, 0], data[i][:, 1], '-', color='r', markersize=1)
-
-
-parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])  # [父级，层级]
 plt.show()
