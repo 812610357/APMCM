@@ -287,10 +287,11 @@ def readcsv(path):
     data0 = pd.read_csv(
         path, index_col=False, header=2)
     j = 0
-    for i in range(len(data0.values)):
-        if "MainCurve" in data0.values[i, 0]:
-            data += list([np.array(data0.values[j:i, :], dtype='float64')])
-            j = i+2
+    if data0.dtypes.X != "float64":
+        for i in range(len(data0.values)):
+            if "MainCurve" in data0.values[i, 0]:
+                data += list([np.array(data0.values[j:i, :], dtype='float64')])
+                j = i+2
     data += list([np.array(data0.values[j:len(data0.values), :], dtype='float64')])
     for i in range(len(data)):
         plt.plot(data[i][:, 0], data[i][:, 1], '-o', color='b', markersize=1)
@@ -335,22 +336,22 @@ def drawline(data):  # 画平行线
 主函数
 '''
 
+if __name__ == '__main__':
+    data = readcsv(path)
+    for i in range(len(data)):
+        data[i] = drawborder(data[i])
+        data[i] = getint(data[i])
+    parent = np.array(findparent(data))
+    index = findm(data)  # 获取极值序号
+    data = divide1(data, index, parent)
+    index = findm(data)
+    data = divide2(data, index)
+    data = drawline(data)
 
-data = readcsv(path)
-for i in range(len(data)):
-    data[i] = drawborder(data[i])
-    data[i] = getint(data[i])
-parent = np.array(findparent(data))
-index = findm(data)  # 获取极值序号
-data = divide1(data, index, parent)
-index = findm(data)
-data = divide2(data, index)
-data = drawline(data)
+    end = time.thread_time()
+    print('Length of curve:         %s mm' % data[0])
+    print('Number of parallel line: %s' % data[1])
+    print('Number of dots:          %s' % data[2])
+    print('Running time:            %s Seconds' % (end-start))
 
-end = time.thread_time()
-print('Length of curve:         %s mm' % data[0])
-print('Number of parallel line: %s' % data[1])
-print('Number of dots:          %s' % data[2])
-print('Running time:            %s Seconds' % (end-start))
-
-plt.show()
+    plt.show()
