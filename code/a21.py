@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy.lib.polynomial import RankWarning
 import pandas as pd
 import math
 import time
@@ -349,6 +348,7 @@ if __name__ == '__main__':
     data = drawline(data)
 
     end = time.thread_time()
+
     print('Length of curve:         %s mm' % data[0])
     print('Number of parallel line: %s' % data[1])
     print('Number of dots:          %s' % data[2])
