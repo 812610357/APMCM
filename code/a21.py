@@ -35,21 +35,19 @@ def range_judge(i, j, data):
 
 
 def findparent(data):
-    # parent[本名][0（爹名），1（继承数）]
+    # parent[本名][0（父级），1（层数）]
     parent = list([])
     for i in range(len(data)):
         parent.append([-1, 1])
-    for i in range(0, len(data)):  # i,j都是爹名字 ，然后开始找爹
+    for i in range(0, len(data)):  # i,j都是父级名字 ，然后开始找父级
         for j in range(i+1, len(data)):
-            if range_judge(i, j, data) != -2:  # 每两个人只会比较一次
+            if range_judge(i, j, data) != -2:
                 small_name = range_judge(i, j, data)
                 big_name = (i if j == small_name else j)
                 parent[small_name][1] += 1
-                # 小的人做儿子，去找爹，大的人坐享其成
-                # 先认第一个碰到的人做爹，如果碰到第二个人继承数比第一个人的继承数小，就认这个人做爹
                 if range_judge(big_name, parent[small_name][0], data) == big_name or parent[small_name][0] == -1:
-                    parent[small_name][0] = big_name  # 自己的继承数+1
-                else:  # 如果碰到的人比已认做爹的继承数大，就当他老大，不管
+                    parent[small_name][0] = big_name  # 自己的层数+1
+                else:
                     continue
     return(parent)
 
