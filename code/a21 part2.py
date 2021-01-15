@@ -15,7 +15,51 @@ for i in range(1, 5):
         f".\code\graph2{i}.csv", header=2)))  # 从csv文件获取数据
     plt.plot(data[i-1][:, 0], data[i-1][:, 1], '-o', color='b', markersize=1)
 dots = 0
-parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])
+#parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])
+
+'''
+第一部分
+'''
+
+
+def _min(parentre, cor, data):
+    return np.min(data[parentre][:, cor])
+
+
+def _max(parentre, cor, data):
+    return np.max(data[parentre][:, cor])
+
+
+def range_judge(i, j, data):
+    if _max(i, 0, data) > _max(j, 0, data) and _min(i, 0, data) < _min(j, 0, data) and _max(i, 1, data) > _max(j, 1, data) and _min(i, 1, data) < _min(j, 1, data):  # i和j比较，如果是包含关系，就返回小的那一个，如果是不是包含关系，就返回0
+        return j
+    elif _max(i, 0, data) < _max(j, 0, data) and _min(i, 0, data) > _min(j, 0, data) and _max(i, 1, data) < _max(j, 1, data) and _min(i, 1, data) > _min(j, 1, data):
+        return i
+    else:
+        return -2
+
+
+def findparent(data):
+    # parent[本名][0（爹名），1（继承数）]
+    parent = list([[-1, 1], [-1, 1], [-1, 1], [-1, 1]])
+    for i in range(0, 4):  # i,j都是爹名字 ，然后开始找爹
+        for j in range(i+1, 4):
+            if range_judge(i, j, data) != -2:  # 每两个人只会比较一次
+                small_name = range_judge(i, j, data)
+                big_name = (i if j == small_name else j)
+                parent[small_name][1] += 1
+                # 小的人做儿子，去找爹，大的人坐享其成
+                # 先认第一个碰到的人做爹，如果碰到第二个人继承数比第一个人的继承数小，就认这个人做爹
+                if range_judge(big_name, parent[small_name][0], data) == big_name or parent[small_name][0] == -1:
+                    parent[small_name][0] = big_name  # 自己的继承数+1
+                else:  # 如果碰到的人比已认做爹的继承数大，就当他老大，不管
+                    continue
+    return(parent)
+
+
+'''
+第二部分
+'''
 
 
 def unit(v):  # 单位化
@@ -231,6 +275,11 @@ def divide2(data, index):
     return(temp)
 
 
+'''
+第三部分
+'''
+
+
 def writecsv(data, num):  # 导出线条
     dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
     dataframe.to_csv(f".\code\\zigzag{num}.csv",
@@ -239,7 +288,7 @@ def writecsv(data, num):  # 导出线条
 
 
 def drawline(data):  # 画平行线
-    global dots
+    dots = 0
     length = 0  # 画线总长
     times = 0  # 平行线数量
     for i in range(len(data)):
@@ -269,12 +318,13 @@ def drawline(data):  # 画平行线
                           (line[j+1, 1]-line[j, 1])**2)
             dots += 1
         i += 1
-    return([length, times])
+    return([length, times, dots])
 
 
 for i in range(len(data)):
     data[i] = drawborder(data[i])
     data[i] = getint(data[i])
+parent = np.array(findparent(data))
 index = findm(data)  # 获取极值序号
 data = divide1(data, index, parent)
 index = findm(data)
@@ -284,7 +334,7 @@ data = drawline(data)
 end = time.thread_time()
 print('Length of curve:         %s mm' % data[0])
 print('Number of parallel line: %s' % data[1])
-print('Number of dots:          %s' % dots)
+print('Number of dots:          %s' % data[2])
 print('Running time:            %s Seconds' % (end-start))
 
 plt.show()

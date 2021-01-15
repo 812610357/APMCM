@@ -37,7 +37,7 @@ for i in range(0, 4):
 '''
 
 
-def divide(data):
+def findparent(data):
     # parent[本名][0（爹名），1（继承数）]
     parent = list([[-1, 1], [-1, 1], [-1, 1], [-1, 1]])
     for i in range(0, 4):  # i,j都是爹名字 ，然后开始找爹
@@ -55,4 +55,4 @@ def divide(data):
     return(parent)
 
 
-print(divide(data))
+print(findparent(data))
