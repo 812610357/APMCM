@@ -10,11 +10,7 @@ start = time.thread_time()
 plt.axis("equal")
 d = -0.1
 data = list([])
-for i in range(1, 5):
-    data.append(np.array(pd.read_csv(
-        f".\code\graph2{i}.csv", header=2)))  # 从csv文件获取数据
-    plt.plot(data[i-1][:, 0], data[i-1][:, 1], '-o', color='b', markersize=1)
-dots = 0
+
 #parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])
 
 '''
@@ -287,6 +283,21 @@ def writecsv(data, num):  # 导出线条
     pass
 
 
+def readcsv(path):
+    data = list([])
+    data0 = pd.read_csv(
+        path, index_col=False, header=2)
+    j = 0
+    for i in range(len(data0.values)):
+        if "MainCurve" in data0.values[i, 0]:
+            data += list([np.array(data0.values[j:i, :], dtype='float64')])
+            j = i+2
+    data += list([np.array(data0.values[j:len(data0.values), :], dtype='float64')])
+    for i in range(len(data)):
+        plt.plot(data[i][:, 0], data[i][:, 1], '-o', color='b', markersize=1)
+    return(data)
+
+
 def drawline(data):  # 画平行线
     dots = 0
     length = 0  # 画线总长
@@ -321,6 +332,7 @@ def drawline(data):  # 画平行线
     return([length, times, dots])
 
 
+data = readcsv(".\code\graph2.csv")
 for i in range(len(data)):
     data[i] = drawborder(data[i])
     data[i] = getint(data[i])
