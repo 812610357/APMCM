@@ -6,14 +6,14 @@ import math
 import time
 
 plt.axis("equal")
-d = -0.1
+d = -1
 data = list([])
 for i in range(1, 5):
     data.append(np.array(pd.read_csv(
         f".\code\graph2{i}.csv", header=2)))  # 从csv文件获取数据
     plt.plot(data[i-1][:, 0], data[i-1][:, 1], '-o', color='r', markersize=1)
 
-parent = np.array([[3, 1], [2, 2], [1, -1], [2, 2]])
+parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])
 
 
 def unit(v):  # 单位化
@@ -101,10 +101,13 @@ for i in range(len(data)):
     data[i] = drawborder(data[i])
     data[i] = getint(data[i])
 '''
-for i in range(1, (max(parent[:, 0]+1))//2+1):
-    for j in range(parent.shape[0]):
+for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
+    for j in range(parent.shape[0]):  # 搜索 i 层的外边界
         if parent[j, 1] == 2*i-1:
-            for k in range(parent.shape[0]):
+            for k in range(parent.shape[0]):  # 搜索 j 作为外边界的对应内边界
                 if parent[k, 0] == j:
+                    a = np.argmax(data[k][:, 1])
 
+
+parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])  # [父级，层级]
 plt.show()
