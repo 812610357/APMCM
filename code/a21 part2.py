@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.lib.polynomial import RankWarning
 import pandas as pd
 import math
 import time
@@ -7,12 +8,12 @@ import time
 start = time.thread_time()
 
 plt.axis("equal")
-d = -1
+d = -0.1
 data = list([])
 for i in range(1, 5):
     data.append(np.array(pd.read_csv(
         f".\code\graph2{i}.csv", header=2)))  # 从csv文件获取数据
-    plt.plot(data[i-1][:, 0], data[i-1][:, 1], '-o', color='r', markersize=1)
+    plt.plot(data[i-1][:, 0], data[i-1][:, 1], '-o', color='b', markersize=1)
 
 parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])
 
@@ -100,7 +101,7 @@ def getint(data):  # 按精度离散化
 def findmax(data):
     index = np.array([], dtype='int64')
     for i in range(-1, data.shape[0]-1):
-        if data[i, 1] >= data[i-1, 1] and data[i, 1] >= data[i+1, 1]:
+        if data[i, 1] > data[i-1, 1] and data[i, 1] >= data[i+1, 1]:
             index = np.append(index, [i], axis=0)
     return(index)
 
@@ -108,7 +109,7 @@ def findmax(data):
 def findmin(data):
     index = np.array([], dtype='int64')
     for i in range(-1, data.shape[0]-1):
-        if data[i, 1] <= data[i-1, 1] and data[i, 1] <= data[i+1, 1]:
+        if data[i, 1] <= data[i-1, 1] and data[i, 1] < data[i+1, 1]:
             index = np.append(index, [i], axis=0)
     return(index)
 
@@ -122,7 +123,7 @@ def findm(data):
 
 def divideout(data_out, data_in, divide_in):
     ym = np.array([data_in[divide_in[0], 1],
-                   data_in[divide_in[1], 1]], dtype='int16')
+                   data_in[divide_in[1], 1]])
     divide_out = np.array([], dtype='int16')
     for i in range(data_out.shape[0]):
         if data_out[i, 1] == ym[0] and data_out[i, 0] > data_in[divide_in[0], 0]:
@@ -143,7 +144,7 @@ def stackline(data_out, data_in, divide_out, divide_in):
     return(list([temp1, temp2]))
 
 
-def divide(data, index, parent):
+def divide1(data, index, parent):
     temp = list([])
     for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
         for j in range(parent.shape[0]):  # 搜索 i 层的外边界
@@ -154,12 +155,94 @@ def divide(data, index, parent):
                         data_in = data[k]
                         divide_in = np.array(  # 内层分割点
                             [np.min(index[k][0, :]), np.max(index[k][1, :])])
-                        divide_out = divideout(data_out, data_in, divide_in)
-                        line = stackline(data_out, data_in,
+                        divide_out = divideout(data_out,  # 外层分割点
+                                               data_in, divide_in)
+                        line = stackline(data_out, data_in,  # 交叉连接分割点
                                          divide_out, divide_in)
-                        data_out = line[0]
-                        temp.append(line[1])
-                temp.append(data_out)
+                        data_out = line[0]  # 更新外层
+                        temp.append(line[1])  # 写入内层
+                temp.append(data_out)  # 写入外层
+    return(temp)
+
+
+def divideline(data, index):
+    line = np.array([0, 0])
+    for n in [0, 1]:
+        for i in index[n]:
+            judge = 0
+            j = i-2
+            while j > -1:
+                if data[j, 1] == data[i, 1]:
+                    judge += 1
+                    break
+                j -= 1
+            if judge == 0:
+                continue
+            k = i+2
+            while k < data.shape[0]:
+                if data[k, 1] == data[i, 1]:
+                    judge += 1
+                    break
+                k += 1
+            if judge == 1:
+                continue
+            elif n == 0:
+                line = np.row_stack((line, [j, i]))
+            else:
+                line = np.row_stack((line, [i, k]))
+    line = np.delete(line, 0, axis=0)
+    return(line)
+
+
+'''
+def orderline(line):
+    temp = np.array([0, 0, 0])
+    while line.shape[0]:
+        lowest = np.argmin(line[:, 0])
+        temp = np.row_stack((temp, line[lowest]))
+        line = np.delete(line, lowest, axis=0)
+    temp = np.delete(temp, 0, axis=0)
+    temp = np.delete(temp, 0, axis=1)
+    temp = np.array(temp, dtype='int64')
+    return(temp)
+'''
+
+
+def dividesub(data, line):
+    temp = list([])
+    while line.shape[0]:
+        judge = 0
+        for i in range(1, line.shape[0]):
+            if line[0, 0] < line[i, 0] < line[0, 1]:
+                line = np.row_stack((line[i, :], line))
+                line = np.delete(line, i+1, axis=0)
+                judge = 1
+                break
+        if judge == 0:
+            temp.append(np.array(data[line[0, 0]+1:line[0, 1], :]))
+            for j in range(line[0, 0]+1, line[0, 1]):
+                data[j] = [0, 0]
+            line = np.delete(line, 0, axis=0)
+    temp.append(np.array(data[:, :]))
+    for i in range(len(temp)):
+        j = 0
+        while j < temp[i].shape[0]:
+            if temp[i][j, 0] == temp[i][j, 1] == 0:
+                temp[i] = np.delete(temp[i], j, axis=0)
+                continue
+            j += 1
+    return(temp)
+
+
+def divide2(data, index):
+    temp = list([])
+    for i in range(len(data)):
+        if index[i].shape[1] > 1:
+            subdata = data[i]
+            subtemp = list([])
+            line = divideline(subdata, index[i])
+            dividesub(subdata, line)
+
     return(temp)
 
 
@@ -167,7 +250,14 @@ for i in range(len(data)):
     data[i] = drawborder(data[i])
     data[i] = getint(data[i])
 index = findm(data)  # 获取极值序号
-data = divide(data, index, parent)
+data = divide1(data, index, parent)
+index = findm(data)
+data = divide2(data, index)
+
+
+for i in range(len(data)):
+    plt.plot(data[i][:, 0], data[i][:, 1], '-', color='r', markersize=1)
+
 
 parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])  # [父级，层级]
 plt.show()
