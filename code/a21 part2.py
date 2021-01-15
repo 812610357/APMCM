@@ -119,16 +119,25 @@ def findm(data):
     return(index)
 
 
+def divide(data, index, parent):
+    temp = list([])
+    for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
+        for j in range(parent.shape[0]):  # 搜索 i 层的外边界
+            if parent[j, 1] == 2*i-1:
+                for k in range(parent.shape[0]):  # 搜索 j 作为外边界的对应内边界
+                    if parent[k, 0] == j:
+                        indexmax = np.min(index[k][0, :])
+                        indexmin = np.max(index[k][1, :])
+                        ymax = data[k][indexmax, 1]
+                        ymin = data[k][indexmin, 1]
+    return(temp)
+
+
 for i in range(len(data)):
     data[i] = drawborder(data[i])
     data[i] = getint(data[i])
 index = findm(data)  # 获取极值序号
-for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
-    for j in range(parent.shape[0]):  # 搜索 i 层的外边界
-        if parent[j, 1] == 2*i-1:
-            for k in range(parent.shape[0]):  # 搜索 j 作为外边界的对应内边界
-                if parent[k, 0] == j:
-
+data = divide(data, index, parent)
 
 parent = np.array([[1, 3], [2, 2], [-1, 1], [2, 2]])  # [父级，层级]
 plt.show()
