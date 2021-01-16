@@ -206,8 +206,10 @@ def ifcross(p1, p2, q1, q2):
 def ifwide(data, last):  # 与上一级间距控制
     i = 0
     while i < data.shape[0]:  # 遍历该级所有数据
-        j = max([0, i-20])
-        while j < min(last.shape[0], i+20):  # 遍历上级部分数据
+        j = 0
+        while j < last.shape[0]:  # 遍历上级部分数据
+            if i >= data.shape[0]:
+                break
             if np.linalg.norm(data[i, :]-last[j, :]) < abs(d)*0.999:  # 小于一个精度的直接删除
                 data[i] = [0, 0]
                 break
@@ -319,6 +321,7 @@ def drawline(data):
                 writecsv(data[i])
             data[i] = draw(data[i])
             i += 1
+        i = 0
         while i < len(data):
             if data[i].shape[0] == 0:
                 del data[i]
