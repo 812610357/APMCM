@@ -5,7 +5,7 @@ import math
 import time
 
 plt.axis("equal")
-d = -1.2
+d = -1
 path = ".\code\graph2.csv"
 length = 0
 times = 0
@@ -155,7 +155,7 @@ def divide2(data):  # 判断区域划分
 
 
 def divide1(data):  # 对复连通区域进行划分
-    global parent
+    parent = np.array(findparent(data))
     for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
         for j in range(parent.shape[0]):  # 搜索 i 层的外边界
             index = list([])
@@ -169,14 +169,12 @@ def divide1(data):  # 对复连通区域进行划分
             while k < len(data):
                 if data[k].all() == data[k].all() == 0:
                     del data[k]
-                    parent = np.delete(parent, k, axis=0)
                     continue
                 k += 1
     return(data)
 
 
 def link(data, index):  # 按需要对内外层连接
-    global parent
     i = 0
     while i < len(index)-1:
         j = i+1
@@ -189,7 +187,6 @@ def link(data, index):  # 按需要对内外层连接
                                      data[index[j]][1:linkpoint[3]], data[index[i]][linkpoint[2]:]))
                 data[index[i]] = temp
                 data[index[j]] = np.array([0, 0])
-                parent[index[j]] = np.array([0, 0])
                 del index[j]
             else:
                 temp = np.row_stack((data[index[i]][:linkpoint[0]],
@@ -197,7 +194,6 @@ def link(data, index):  # 按需要对内外层连接
                                      data[index[i]][linkpoint[2]:]))
                 data[index[i]] = temp
                 data[index[j]] = np.array([0, 0])
-                parent[index[j]] = np.array([0, 0])
                 del index[j]
     return(data)
 
@@ -261,7 +257,6 @@ def readcsv(path):  # 读取线条
 start = time.thread_time()
 
 data = readcsv(path)
-parent = np.array(findparent(data))
 data = divide1(data)
 
 end = time.thread_time()
