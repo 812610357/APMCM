@@ -129,7 +129,7 @@ def ifclose(data1, data2):  # 连接点序号
     point2 = -2  # 第二个连接点，指向data2
     for i in range(data1.shape[0]):
         for j in range(data2.shape[0]):
-            if np.linalg.norm(data1[i, :]-data2[j, :]) < 2*abs(d):
+            if np.linalg.norm(data1[i, :]-data2[j, :]) < abs(d):
                 if point2 == -2:
                     point1 = j
                 elif point1 == -2:
@@ -154,7 +154,9 @@ def divide2(data):
             i += 1
             s = 0
         else:
-            data.append(np.array(data[i][dividepoint[0]:dividepoint[1]+1, :]))
+            temp = np.array(data[i][dividepoint[0]:dividepoint[1]+1, :])
+            temp = np.row_stack((temp, [data[i][dividepoint[0]]]))
+            data.append(temp)
             data[i] = np.delete(data[i], range(
                 dividepoint[0], dividepoint[1]+1), axis=0)
             s = dividepoint[0]
@@ -180,7 +182,7 @@ def delcross(data):
             k = j
             while k < j+(data[i].shape[0]-j)//4:
                 if ifcross(data[i][j, :], data[i][j+1, :], data[i][k, :], data[i][k+1, :]):
-                    data = np.row_stack((data[i][0:j, :], data[i][k+1:, :]))
+                    data[i] = np.row_stack((data[i][0:j, :], data[i][k+1:, :]))
                     continue
                 else:
                     k += 1
@@ -272,7 +274,7 @@ def draw(data):  # 画等高线
 
 def writecsv(data):  # 导出线条
     dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
-    dataframe.to_csv(f".\code\\zigzag{times}.csv",
+    dataframe.to_csv(f".\code\contour{times}.csv",
                      index=False, mode='w', sep=',')
     pass
 
@@ -294,7 +296,7 @@ def readcsv(path):  # 读取线条
     return(data)
 
 
-def drawline(data, data0):
+def drawline(data):
     global length
     global storeys
     global times
@@ -308,9 +310,11 @@ def drawline(data, data0):
                 del data[i]
                 print('-')
                 continue
+            if storeys > 0:
+                plt.plot(data[i][:, 0], data[i][:, 1],
+                         '-', color='r', markersize=3)
+                writecsv(data[i])
             data[i] = draw(data[i])
-            plt.plot(data[i][:, 0], data[i][:, 1],
-                     '-', color='r', markersize=3)
             times += 1
             i += 1
         if len(data) == 0:
@@ -326,8 +330,8 @@ def drawline(data, data0):
 
 start = time.thread_time()
 
-data0 = readcsv(path)
-data = drawline(data0, data0)
+data = readcsv(path)
+data = drawline(data)
 
 end = time.thread_time()
 print('Length of curve: %s mm' % length)
