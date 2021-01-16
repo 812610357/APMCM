@@ -15,7 +15,7 @@ for i in range(len(data0.values)):
 data += list([np.array(data0.values[j:len(data0.values), :], dtype='float64')])
 
 n = len(data)
-for i in range(0, 4):
+for i in range(0, n):
     print(i, "小：", np.min(data[i][:, 1]), "大：", np.max(data[i][:, 1]))
 
 
