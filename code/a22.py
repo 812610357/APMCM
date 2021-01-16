@@ -5,7 +5,7 @@ import math
 import time
 
 plt.axis("equal")
-d = -1
+d = -1.2
 path = ".\code\graph2.csv"
 length = 0
 times = 0
@@ -139,7 +139,7 @@ def draw(data):  # 画等高线
     return(temp)
 
 
-def ifdivide(data):  # 判断区域划分
+def divide2(data):  # 判断区域划分
     for i in range(data.shape[0]-2):
         for j in range(i, data.shape[0]-2):
             x1 = data[i, 0]
@@ -154,35 +154,51 @@ def ifdivide(data):  # 判断区域划分
     return(np.array([0, 0]))
 
 
-def divide1(data, parent):  # 对复连通区域进行划分
+def divide1(data):  # 对复连通区域进行划分
+    global parent
     for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
-        temp = list([])
         for j in range(parent.shape[0]):  # 搜索 i 层的外边界
+            index = list([])
             if parent[j, 1] == 2*i-1:
-                temp.append(data[j])
+                index.append(j)
                 for k in range(parent.shape[0]):  # 搜索 j 作为外边界的对应内边界
                     if parent[k, 0] == j:
-                        temp.append(data[k])
-        link(temp)
-    pass
+                        index.append(k)
+            data = link(data, index)
+            k = 0
+            while k < len(data):
+                if data[k].all() == data[k].all() == 0:
+                    del data[k]
+                    parent = np.delete(parent, k, axis=0)
+                    continue
+                k += 1
+    return(data)
 
 
-def link(data):  # 判断是否需要分割
-    for i in range(len(data)):
-        for j in range(i+1, len(data)):
-            linkpoint = ifclose(data[i], data[j])
+def link(data, index):  # 按需要对内外层连接
+    global parent
+    i = 0
+    while i < len(index)-1:
+        j = i+1
+        while j < len(index):
+            linkpoint = ifclose(data[index[i]], data[index[j]])
             if linkpoint.shape[0] == 0:
-                continue
+                j += 1
             elif linkpoint[1] > linkpoint[3]:
-                temp = np.row_stack((data[i][:linkpoint[0]], data[j][linkpoint[1]:],
-                                     data[j][1:linkpoint[3]], data[i][linkpoint[2]:]))
-                data[i] = temp
-                del data[j]
+                temp = np.row_stack((data[index[i]][:linkpoint[0]], data[index[j]][linkpoint[1]:],
+                                     data[index[j]][1:linkpoint[3]], data[index[i]][linkpoint[2]:]))
+                data[index[i]] = temp
+                data[index[j]] = np.array([0, 0])
+                parent[index[j]] = np.array([0, 0])
+                del index[j]
             else:
-                temp = np.row_stack((data[i][:linkpoint[0]], data[j][linkpoint[1]:linkpoint[3]],
-                                     data[i][linkpoint[2]:]))
-                data[i] = temp
-                del data[j]
+                temp = np.row_stack((data[index[i]][:linkpoint[0]],
+                                     data[index[j]][linkpoint[1]:linkpoint[3]],
+                                     data[index[i]][linkpoint[2]:]))
+                data[index[i]] = temp
+                data[index[j]] = np.array([0, 0])
+                parent[index[j]] = np.array([0, 0])
+                del index[j]
     return(data)
 
 
@@ -233,7 +249,8 @@ def readcsv(path):  # 读取线条
                 j = i+2
     data += list([np.array(data0.values[j:len(data0.values), :], dtype='float64')])
     for i in range(len(data)):
-        plt.plot(data[i][:, 0], data[i][:, 1], '-o', color='b', markersize=1)
+        plt.plot(data[i][:, 0], data[i][:, 1],
+                 '-o', color='b', markersize=1)
     return(data)
 
 
@@ -245,7 +262,7 @@ start = time.thread_time()
 
 data = readcsv(path)
 parent = np.array(findparent(data))
-data = divide1(data, parent)
+data = divide1(data)
 
 end = time.thread_time()
 print('Length of curve: %s mm' % length)
