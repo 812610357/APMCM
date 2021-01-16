@@ -139,21 +139,6 @@ def draw(data):  # 画等高线
     return(temp)
 
 
-def divide2(data):  # 判断区域划分
-    for i in range(data.shape[0]-2):
-        for j in range(i, data.shape[0]-2):
-            x1 = data[i, 0]
-            y1 = data[i, 1]
-            x2 = data[j, 0]
-            y2 = data[j, 1]
-            if 0 < math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 3:  # 间距过近且向量方向差超过90度
-                v1 = data[i+2, :]-data[i, :]
-                v2 = data[j+2, :]-data[j, :]
-                if abs(angle(v1)-angle(v2)) > math.pi/2:
-                    return(np.array([i, j]))
-    return(np.array([0, 0]))
-
-
 def divide1(data):  # 对复连通区域进行划分
     parent = np.array(findparent(data))
     for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
@@ -195,6 +180,7 @@ def link(data, index):  # 按需要对内外层连接
                 data[index[i]] = temp
                 data[index[j]] = np.array([0, 0])
                 del index[j]
+        i += 1
     return(data)
 
 
@@ -219,6 +205,28 @@ def ifclose(data1, data2):
                 index = np.append(index, [i, point2], axis=0)
                 return(index)
     return(index)
+
+
+def divide2(data):
+    for i in range(len(data)):
+        index = ifnear(data)  # 分割点序号
+
+    return(data)
+
+
+def ifnear(data):  # 判断区域划分
+    for i in range(data.shape[0]-2):
+        for j in range(i, data.shape[0]-2):
+            x1 = data[i, 0]
+            y1 = data[i, 1]
+            x2 = data[j, 0]
+            y2 = data[j, 1]
+            if 0 < math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 3:  # 间距过近且向量方向差超过90度
+                v1 = data[i+2, :]-data[i, :]
+                v2 = data[j+2, :]-data[j, :]
+                if abs(angle(v1)-angle(v2)) > math.pi/2:
+                    return(np.array([i, j]))
+    return(np.array([0, 0]))
 
 
 '''
@@ -250,6 +258,26 @@ def readcsv(path):  # 读取线条
     return(data)
 
 
+def drawline(data):  # 判断是否需要分割
+    global length
+    global times
+    while True:
+        data = divide1(data)
+        data = divide2(data)
+        data = draw(data)
+        if data[0].shape[0] < 12:
+            writecsv(data[0])
+            break
+        i = 1
+        while i < len(data):
+            if data.shape[0] < 12:
+                del data[i]
+                print('-')
+                continue
+            i += 1
+    pass
+
+
 '''
 主函数
 '''
@@ -257,7 +285,7 @@ def readcsv(path):  # 读取线条
 start = time.thread_time()
 
 data = readcsv(path)
-data = divide1(data)
+data = drawline(data)
 
 end = time.thread_time()
 print('Length of curve: %s mm' % length)
