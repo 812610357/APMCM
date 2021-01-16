@@ -136,13 +136,15 @@ def ifclose(data1, data2):  # 连接点序号
                     point2 = j
                     break
             elif point2 < -1 < point1:
-                index = np.append(index, [i, point1+1], axis=0)
+                index = np.append(index, [i+1, point1], axis=0)
                 point2 = -1
                 point1 = -2
                 break
             elif j == data2.shape[0]-1 and point1 < -1 < point2:
-                index = np.append(index, [i, point2], axis=0)
+                index = np.append(index, [i-1, point2+1], axis=0)
                 return(index)
+    if point2 == -1:
+        index = np.append(index, [index[0]+1, index[1]-1], axis=0)
     return(index)
 
 
@@ -166,8 +168,8 @@ def divide2(data):
 
 def ifnear(data, s):  # 分割点序号
     for i in range(s, data.shape[0]-2):
-        for j in range(min(i+50, data.shape[0]-2), data.shape[0]-2):
-            if np.linalg.norm(data[i, :]-data[j, :]) < abs(d):  # 间距过近且向量方向差超过90度
+        for j in range(min(i+5, data.shape[0]-2), data.shape[0]-2):
+            if np.linalg.norm(data[i, :]-data[j, :]) < 0.8*abs(d):  # 间距过近且向量方向差超过90度
                 v1 = data[i+2, :]-data[i, :]
                 v2 = data[j+2, :]-data[j, :]
                 if dot(v1, v2) < 0:
@@ -182,7 +184,7 @@ def delcross(data):
             k = j
             while k < j+(data[i].shape[0]-j)//4:
                 if ifcross(data[i][j, :], data[i][j+1, :], data[i][k, :], data[i][k+1, :]):
-                    data[i] = np.row_stack((data[i][0:j, :], data[i][k+1:, :]))
+                    data[i] = np.row_stack((data[i][:j, :], data[i][k+1:, :]))
                     continue
                 else:
                     k += 1
@@ -306,16 +308,21 @@ def drawline(data):
         data = delcross(data)
         i = 0
         while i < len(data):
-            if data[i].shape[0] < 12:
+            if data[i].shape[0] < 15:
                 del data[i]
                 print('-')
                 continue
             if storeys > 0:
+                times += 1
                 plt.plot(data[i][:, 0], data[i][:, 1],
                          '-', color='r', markersize=3)
                 writecsv(data[i])
             data[i] = draw(data[i])
-            times += 1
+            i += 1
+        while i < len(data):
+            if data[i].shape[0] == 0:
+                del data[i]
+                continue
             i += 1
         if len(data) == 0:
             break
