@@ -7,7 +7,10 @@ import time
 plt.axis("equal")
 d = -0.1
 path = ".\code\graph2.csv"
-
+length = 0  # 画线总长
+times = 0
+dots = 0
+num = 0
 
 '''
 第一部分
@@ -81,9 +84,8 @@ def drawborder(data):  # 内缩一次
     data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
     data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
     temp = np.array([0, 0])
-    times = data.shape[0]-2
     i = 0
-    while i < times:
+    while i < data.shape[0]-2:
         v1 = data[i+1, :]-data[i, :]
         v2 = data[i+2, :]-data[i+1, :]
         u = d/(math.sin(inangle(v1, v2)))
@@ -287,9 +289,10 @@ def divide2(data, index):  # 对单连通区域进行划分
 '''
 
 
-def writecsv(data, num):  # 导出线条
+def writecsv(data):  # 导出线条
+    global times
     dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
-    dataframe.to_csv(f".\code\\zigzag{num}.csv",
+    dataframe.to_csv(f".\code\\zigzag{times}.csv",
                      index=False, mode='w', sep=',')
     pass
 
@@ -311,9 +314,10 @@ def readcsv(path):  # 读取线条
 
 
 def drawline(data):  # 画平行线
-    dots = 0
-    length = 0  # 画线总长
-    times = 0  # 平行线数量
+    global length
+    global times
+    global dots
+    global num
     for i in range(len(data)):
         line = np.array([0, 0])
         area = data[i]
@@ -332,16 +336,17 @@ def drawline(data):  # 画平行线
             j = round(j + abs(d), 1)
         line = np.delete(line, 0, axis=0)
         line = np.column_stack((line[:, 1], line[:, 0]))
-        writecsv(line, i+1)
+        times += 1
+        writecsv(line)
         plt.plot(line[:, 0], line[:, 1], '-', color='r')
-        times = times+int(line.shape[0]/2)
+        num = num+int(line.shape[0]/2)
         for j in range(line.shape[0]-1):
             length = length + \
                 math.sqrt((line[j+1, 0]-line[j, 0])**2 +
                           (line[j+1, 1]-line[j, 1])**2)
             dots += 1
         i += 1
-    return([length, times, dots])
+    pass
 
 
 '''
@@ -361,13 +366,13 @@ index = findm(data, index)
 data = divide1(data, index, parent)
 index = findex(data)
 data = divide2(data, index)
-data = drawline(data)
+drawline(data)
 
 end = time.thread_time()
 
-print('Length of curve:         %s mm' % data[0])
-print('Number of parallel line: %s' % data[1])
-print('Number of dots:          %s' % data[2])
+print('Length of curve:         %s mm' % length)
+print('Number of parallel line: %s' % num)
+print('Number of dots:          %s' % dots)
 print('Running time:            %s Seconds' % (end-start))
 
 plt.show()

@@ -11,8 +11,9 @@ data = data0  # 从csv文件获取数据
 d = -1  # 精度
 plt.axis("equal")
 plt.plot(data[:, 0], data[:, 1], '-o', markersize=1)
-dots = 0
+length = 0
 times = 0
+dots = 0
 
 
 def unit(v):  # 单位化
@@ -139,7 +140,7 @@ def ifdivide(data):  # 判断区域划分
 
 
 def drawline(data):  # 判断是否需要分割
-    length = 0
+    global length
     global times
     while True:
         temp = data[-1]
@@ -169,7 +170,7 @@ def drawline(data):  # 判断是否需要分割
             temp1 = temp[0:math.floor(index[0])+1, :]
             temp2 = temp[math.floor(index[1]):temp.shape[0], :]
             data[-2] = np.row_stack((temp1, temp2))
-    return([length, times])
+    pass
 
 
 def writecsv(data):
@@ -181,11 +182,11 @@ def writecsv(data):
 
 
 data = list([data])
-data = drawline(data)
+drawline(data)
 
 end = time.thread_time()
-print('Length of curve: %s mm' % data[0])
-print('Number of turns: %s' % data[1])
+print('Length of curve: %s mm' % length)
+print('Number of turns: %s' % times)
 print('Number of dots:  %s' % dots)
 print('Running time:    %s Seconds' % (end-start))
 
