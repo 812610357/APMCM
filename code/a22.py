@@ -5,7 +5,7 @@ import math
 import time
 
 plt.axis("equal")
-d = -0.1
+d = -1
 path = ".\code\graph2.csv"
 length = 0
 times = 0
@@ -154,14 +154,69 @@ def ifdivide(data):  # 判断区域划分
     return(np.array([0, 0]))
 
 
+def divide1(data, parent):  # 对复连通区域进行划分
+    for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
+        temp = list([])
+        for j in range(parent.shape[0]):  # 搜索 i 层的外边界
+            if parent[j, 1] == 2*i-1:
+                temp.append(data[j])
+                for k in range(parent.shape[0]):  # 搜索 j 作为外边界的对应内边界
+                    if parent[k, 0] == j:
+                        temp.append(data[k])
+        link(temp)
+    pass
+
+
+def link(data):  # 判断是否需要分割
+    for i in range(len(data)):
+        for j in range(i+1, len(data)):
+            linkpoint = ifclose(data[i], data[j])
+            if linkpoint.shape[0] == 0:
+                continue
+            elif linkpoint[1] > linkpoint[3]:
+                temp = np.row_stack((data[i][:linkpoint[0]], data[j][linkpoint[1]:],
+                                     data[j][1:linkpoint[3]], data[i][linkpoint[2]:]))
+                data[i] = temp
+                del data[j]
+            else:
+                temp = np.row_stack((data[i][:linkpoint[0]], data[j][linkpoint[1]:linkpoint[3]],
+                                     data[i][linkpoint[2]:]))
+                data[i] = temp
+                del data[j]
+    return(data)
+
+
+def ifclose(data1, data2):
+    index = np.array([], dtype="int64")
+    point1 = -1  # 第一个连接点，指向data2
+    point2 = -2  # 第二个连接点，指向data2
+    for i in range(data1.shape[0]):
+        for j in range(data2.shape[0]):
+            if np.linalg.norm(data1[i, :]-data2[j, :]) < 2*abs(d):
+                if point2 == -2:
+                    point1 = j
+                elif point1 == -2:
+                    point2 = j
+                    break
+            elif point2 < -1 < point1:
+                index = np.append(index, [i, point1+1], axis=0)
+                point2 = -1
+                point1 = -2
+                break
+            elif j == data2.shape[0]-1 and point1 < -1 < point2:
+                index = np.append(index, [i, point2], axis=0)
+                return(index)
+    return(index)
+
+
 '''
 第三部分
 '''
 
 
-def writecsv(data, num):  # 导出线条
+def writecsv(data):  # 导出线条
     dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
-    dataframe.to_csv(f".\code\\zigzag{num}.csv",
+    dataframe.to_csv(f".\code\\zigzag{times}.csv",
                      index=False, mode='w', sep=',')
     pass
 
@@ -186,7 +241,16 @@ def readcsv(path):  # 读取线条
 主函数
 '''
 
-
 start = time.thread_time()
 
 data = readcsv(path)
+parent = np.array(findparent(data))
+data = divide1(data, parent)
+
+end = time.thread_time()
+print('Length of curve: %s mm' % length)
+print('Number of turns: %s' % times)
+print('Number of dots:  %s' % dots)
+print('Running time:    %s Seconds' % (end-start))
+
+plt.show()

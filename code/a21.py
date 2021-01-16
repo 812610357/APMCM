@@ -200,7 +200,7 @@ def stackline(data_out, data_in, divide_out, divide_in):  # 复连通区域分�
 
 def divide1(data, index, parent):  # 对复连通区域进行划分
     temp = list([])
-    for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
+    for i in range(1, (max(parent[:, 1]+1))//2+1):  # 划分 i 层
         for j in range(parent.shape[0]):  # 搜索 i 层的外边界
             if parent[j, 1] == 2*i-1:
                 data_out = data[j]
