@@ -4,8 +4,6 @@ import pandas as pd
 import math
 import time
 
-start = time.thread_time()
-
 plt.axis("equal")
 d = -0.1
 path = ".\code\graph2.csv"
@@ -64,11 +62,11 @@ def inangle(v1, v2):  # 向量夹角
     return(math.acos(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2))))
 
 
-def cross(v1, v2):
+def cross(v1, v2):  # 叉乘
     return(v1[0]*v2[1]-v2[0]*v1[1])
 
 
-def ifcross(p1, p2, q1, q2):
+def ifcross(p1, p2, q1, q2):  # 判断有无交叉
     v11 = q1-p1
     v12 = q2-p1
     v21 = q1-p2
@@ -136,45 +134,61 @@ def getint(data):  # 按精度离散化
     return(temp)
 
 
-def findmax(data):
-    index = np.array([], dtype='int64')
+def findmax(data):  # 搜索极大值
+    index = np.array([], dtype="int64")
     for i in range(-1, data.shape[0]-1):
         if data[i, 1] > data[i-1, 1] and data[i, 1] >= data[i+1, 1]:
             index = np.append(index, [i], axis=0)
     return(index)
 
 
-def findmin(data):
-    index = np.array([], dtype='int64')
+def findmin(data):  # 搜索极小值
+    index = np.array([], dtype="int64")
     for i in range(-1, data.shape[0]-1):
         if data[i, 1] <= data[i-1, 1] and data[i, 1] < data[i+1, 1]:
             index = np.append(index, [i], axis=0)
     return(index)
 
 
-def findm(data):  # 获取极值序号
+def findex(data):  # 获取极值序号
     index = list([])
     for i in range(len(data)):
         index.append(np.array([findmax(data[i]), findmin(data[i])]))
     return(index)
 
 
-def divideout(data_out, data_in, divide_in):
+def findm(data, index):  # 获取最大值序号
+    temp = list([])
+    for i in range(len(index)):
+        if index[i].shape[1] == 1:
+            temp.append(np.array([index[i][0, 0], index[i][1, 0]]))
+            continue
+        maxy = np.max(data[i][:, 1])
+        miny = np.min(data[i][:, 1])
+        m = [[], []]
+        for j in range(index[i].shape[1]):
+            if data[i][index[i][0, j], 1] == maxy:
+                m[0] = index[i][0, j]
+        for j in range(index[i].shape[1]):
+            if data[i][index[i][1, j], 1] == miny:
+                m[1] = index[i][0, j]
+        temp.append(np.array(m))
+    return(temp)
+
+
+def divideout(data_out, data_in, divide_in):  # 获取外层分割点
     ym = np.array([data_in[divide_in[0], 1],
                    data_in[divide_in[1], 1]])
     divide_out = np.array([], dtype='int16')
-    for i in range(data_out.shape[0]):
-        if data_out[i, 1] == ym[0] and data_out[i, 0] > data_in[divide_in[0], 0]:
-            divide_out = np.append(divide_out, [i], axis=0)
-            break
-    for i in range(data_out.shape[0]):
-        if data_out[i, 1] == ym[1] and data_out[i, 0] > data_in[divide_in[0], 0]:
-            divide_out = np.append(divide_out, [i], axis=0)
-            break
+    for i in [0, 1]:
+        for j in range(data_out.shape[0]):
+            if data_out[j, 1] == ym[i] and data_out[j, 0] > data_in[divide_in[0], 0]:
+                divide_out = np.append(divide_out, [j], axis=0)
+                break
     return(divide_out)
 
 
-def stackline(data_out, data_in, divide_out, divide_in):
+def stackline(data_out, data_in, divide_out, divide_in):  # 复连通区域分割连接
     temp1 = np.row_stack(
         (data_out[:divide_out[0]+1], data_in[divide_in[0]:divide_in[1]+1], data_out[divide_out[1]:]))
     temp2 = np.row_stack(
@@ -182,7 +196,7 @@ def stackline(data_out, data_in, divide_out, divide_in):
     return(list([temp1, temp2]))
 
 
-def divide1(data, index, parent):
+def divide1(data, index, parent):  # 对复连通区域进行划分
     temp = list([])
     for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
         for j in range(parent.shape[0]):  # 搜索 i 层的外边界
@@ -191,8 +205,7 @@ def divide1(data, index, parent):
                 for k in range(parent.shape[0]):  # 搜索 j 作为外边界的对应内边界
                     if parent[k, 0] == j:
                         data_in = data[k]
-                        divide_in = np.array(  # 内层分割点
-                            [np.min(index[k][0, :]), np.max(index[k][1, :])])
+                        divide_in = index[k]  # 内层分割点
                         divide_out = divideout(data_out,  # 外层分割点
                                                data_in, divide_in)
                         line = stackline(data_out, data_in,  # 交叉连接分割点
@@ -203,7 +216,7 @@ def divide1(data, index, parent):
     return(temp)
 
 
-def divideline(data, index):
+def divideline(data, index):  # 获取单连通区域分割点
     line = np.array([0, 0])
     for n in [0, 1]:
         for i in index[n]:
@@ -232,7 +245,7 @@ def divideline(data, index):
     return(line)
 
 
-def dividesub(data, line):
+def dividesub(data, line):  # 复连通区域分割连接
     temp = list([])
     while line.shape[0]:
         judge = 0
@@ -258,7 +271,7 @@ def dividesub(data, line):
     return(temp)
 
 
-def divide2(data, index):
+def divide2(data, index):  # 对单连通区域进行划分
     temp = list([])
     for i in range(len(data)):
         if index[i].shape[1] > 1:
@@ -281,7 +294,7 @@ def writecsv(data, num):  # 导出线条
     pass
 
 
-def readcsv(path):
+def readcsv(path):  # 读取线条
     data = list([])
     data0 = pd.read_csv(
         path, index_col=False, header=2)
@@ -335,23 +348,26 @@ def drawline(data):  # 画平行线
 主函数
 '''
 
-if __name__ == '__main__':
-    data = readcsv(path)
-    for i in range(len(data)):
-        data[i] = drawborder(data[i])
-        data[i] = getint(data[i])
-    parent = np.array(findparent(data))
-    index = findm(data)
-    data = divide1(data, index, parent)
-    index = findm(data)
-    data = divide2(data, index)
-    data = drawline(data)
 
-    end = time.thread_time()
+start = time.thread_time()
 
-    print('Length of curve:         %s mm' % data[0])
-    print('Number of parallel line: %s' % data[1])
-    print('Number of dots:          %s' % data[2])
-    print('Running time:            %s Seconds' % (end-start))
+data = readcsv(path)
+for i in range(len(data)):
+    data[i] = drawborder(data[i])
+    data[i] = getint(data[i])
+parent = np.array(findparent(data))
+index = findex(data)
+index = findm(data, index)
+data = divide1(data, index, parent)
+index = findex(data)
+data = divide2(data, index)
+data = drawline(data)
 
-    plt.show()
+end = time.thread_time()
+
+print('Length of curve:         %s mm' % data[0])
+print('Number of parallel line: %s' % data[1])
+print('Number of dots:          %s' % data[2])
+print('Running time:            %s Seconds' % (end-start))
+
+plt.show()
