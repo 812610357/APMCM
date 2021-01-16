@@ -294,7 +294,7 @@ def readcsv(path):  # 读取线条
     return(data)
 
 
-def drawline(data, data0):  # 判断是否需要分割
+def drawline(data, data0):
     global length
     global storeys
     global times
