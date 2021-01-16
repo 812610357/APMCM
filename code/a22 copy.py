@@ -5,9 +5,10 @@ import math
 import time
 
 plt.axis("equal")
-d = -1
+d = -0.1
 path = ".\code\graph2.csv"
 length = 0
+storeys = 0
 times = 0
 dots = 0
 
@@ -69,8 +70,133 @@ def inangle(v1, v2):  # 向量夹角
     return(math.acos(round(np.dot(v1, np.transpose(v2)) / (np.linalg.norm(v1)*np.linalg.norm(v2)), 9)))
 
 
+def dot(v1, v2):  # 向量点乘
+    return(v1[0]*v2[0]+v1[1]*v2[1])
+
+
 def cross(v1, v2):  # 平面内向量叉乘
     return(v1[0]*v2[1]-v2[0]*v1[1])
+
+
+def divide1(data):  # 对复连通区域进行划分
+    parent = np.array(findparent(data))
+    for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
+        for j in range(parent.shape[0]):  # 搜索 i 层的外边界
+            index = list([])
+            if parent[j, 1] == 2*i-1:
+                index.append(j)
+                for k in range(parent.shape[0]):  # 搜索 j 作为外边界的对应内边界
+                    if parent[k, 0] == j:
+                        index.append(k)
+            data = link(data, index)
+            k = 0
+            while k < len(data):
+                if data[k].all() == data[k].all() == 0:
+                    del data[k]
+                    continue
+                k += 1
+    return(data)
+
+
+def link(data, index):  # 按需要对内外层连接
+    i = 0
+    while i < len(index)-1:
+        j = i+1
+        while j < len(index):
+            linkpoint = ifclose(data[index[i]], data[index[j]])
+            if linkpoint.shape[0] == 0:
+                j += 1
+            elif linkpoint[1] > linkpoint[3]:
+                temp = np.row_stack((data[index[i]][:linkpoint[0]], data[index[j]][linkpoint[1]:],
+                                     data[index[j]][1:linkpoint[3]], data[index[i]][linkpoint[2]:]))
+                data[index[i]] = temp
+                data[index[j]] = np.array([0, 0])
+                del index[j]
+            else:
+                temp = np.row_stack((data[index[i]][:linkpoint[0]],
+                                     data[index[j]][linkpoint[1]:linkpoint[3]],
+                                     data[index[i]][linkpoint[2]:]))
+                data[index[i]] = temp
+                data[index[j]] = np.array([0, 0])
+                del index[j]
+        i += 1
+    return(data)
+
+
+def ifclose(data1, data2):  # 连接点序号
+    index = np.array([], dtype="int64")
+    point1 = -1  # 第一个连接点，指向data2
+    point2 = -2  # 第二个连接点，指向data2
+    for i in range(data1.shape[0]):
+        for j in range(data2.shape[0]):
+            if np.linalg.norm(data1[i, :]-data2[j, :]) < 2*abs(d):
+                if point2 == -2:
+                    point1 = j
+                elif point1 == -2:
+                    point2 = j
+                    break
+            elif point2 < -1 < point1:
+                index = np.append(index, [i, point1+1], axis=0)
+                point2 = -1
+                point1 = -2
+                break
+            elif j == data2.shape[0]-1 and point1 < -1 < point2:
+                index = np.append(index, [i, point2], axis=0)
+                return(index)
+    return(index)
+
+
+def divide2(data):
+    i = s = 0
+    while i < len(data):
+        dividepoint = ifnear(data[i], s)
+        if dividepoint.shape[0] == 0:
+            i += 1
+            s = 0
+        else:
+            data.append(np.array(data[i][dividepoint[0]:dividepoint[1]+1, :]))
+            data[i] = np.delete(data[i], range(
+                dividepoint[0], dividepoint[1]+1), axis=0)
+            s = dividepoint[0]
+            continue
+    return(data)
+
+
+def ifnear(data, s):  # 分割点序号
+    for i in range(s, data.shape[0]-2):
+        for j in range(min(i+50, data.shape[0]-2), data.shape[0]-2):
+            if np.linalg.norm(data[i, :]-data[j, :]) < abs(d):  # 间距过近且向量方向差超过90度
+                v1 = data[i+2, :]-data[i, :]
+                v2 = data[j+2, :]-data[j, :]
+                if dot(v1, v2) < 0:
+                    return(np.array([i, j]))
+    return(np.array([]))
+
+
+def delcross(data):
+    for i in range(len(data)):
+        j = 0
+        while j < data[i].shape[0]-3:
+            k = j
+            while k < j+(data[i].shape[0]-j)//4:
+                if ifcross(data[i][j, :], data[i][j+1, :], data[i][k, :], data[i][k+1, :]):
+                    data = np.row_stack((data[i][0:j, :], data[i][k+1:, :]))
+                    continue
+                else:
+                    k += 1
+            j += 1
+    return(data)
+
+
+def ifcross(p1, p2, q1, q2):
+    v11 = q1-p1
+    v12 = q2-p1
+    v21 = q1-p2
+    v22 = q2-p2
+    if cross(v11, v12)*cross(v21, v22) < 0 and cross(v11, v21)*cross(v12, v22) < 0:
+        return(1)
+    else:
+        return(0)
 
 
 def ifwide(data, last):  # 与上一级间距控制
@@ -139,96 +265,6 @@ def draw(data):  # 画等高线
     return(temp)
 
 
-def divide1(data):  # 对复连通区域进行划分
-    parent = np.array(findparent(data))
-    for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
-        for j in range(parent.shape[0]):  # 搜索 i 层的外边界
-            index = list([])
-            if parent[j, 1] == 2*i-1:
-                index.append(j)
-                for k in range(parent.shape[0]):  # 搜索 j 作为外边界的对应内边界
-                    if parent[k, 0] == j:
-                        index.append(k)
-            data = link(data, index)
-            k = 0
-            while k < len(data):
-                if data[k].all() == data[k].all() == 0:
-                    del data[k]
-                    continue
-                k += 1
-    return(data)
-
-
-def link(data, index):  # 按需要对内外层连接
-    i = 0
-    while i < len(index)-1:
-        j = i+1
-        while j < len(index):
-            linkpoint = ifclose(data[index[i]], data[index[j]])
-            if linkpoint.shape[0] == 0:
-                j += 1
-            elif linkpoint[1] > linkpoint[3]:
-                temp = np.row_stack((data[index[i]][:linkpoint[0]], data[index[j]][linkpoint[1]:],
-                                     data[index[j]][1:linkpoint[3]], data[index[i]][linkpoint[2]:]))
-                data[index[i]] = temp
-                data[index[j]] = np.array([0, 0])
-                del index[j]
-            else:
-                temp = np.row_stack((data[index[i]][:linkpoint[0]],
-                                     data[index[j]][linkpoint[1]:linkpoint[3]],
-                                     data[index[i]][linkpoint[2]:]))
-                data[index[i]] = temp
-                data[index[j]] = np.array([0, 0])
-                del index[j]
-        i += 1
-    return(data)
-
-
-def ifclose(data1, data2):
-    index = np.array([], dtype="int64")
-    point1 = -1  # 第一个连接点，指向data2
-    point2 = -2  # 第二个连接点，指向data2
-    for i in range(data1.shape[0]):
-        for j in range(data2.shape[0]):
-            if np.linalg.norm(data1[i, :]-data2[j, :]) < 2*abs(d):
-                if point2 == -2:
-                    point1 = j
-                elif point1 == -2:
-                    point2 = j
-                    break
-            elif point2 < -1 < point1:
-                index = np.append(index, [i, point1+1], axis=0)
-                point2 = -1
-                point1 = -2
-                break
-            elif j == data2.shape[0]-1 and point1 < -1 < point2:
-                index = np.append(index, [i, point2], axis=0)
-                return(index)
-    return(index)
-
-
-def divide2(data):
-    for i in range(len(data)):
-        index = ifnear(data)  # 分割点序号
-
-    return(data)
-
-
-def ifnear(data):  # 判断区域划分
-    for i in range(data.shape[0]-2):
-        for j in range(i, data.shape[0]-2):
-            x1 = data[i, 0]
-            y1 = data[i, 1]
-            x2 = data[j, 0]
-            y2 = data[j, 1]
-            if 0 < math.sqrt((x2-x1)**2+(y2-y1)**2) < abs(d) and j-i > 3:  # 间距过近且向量方向差超过90度
-                v1 = data[i+2, :]-data[i, :]
-                v2 = data[j+2, :]-data[j, :]
-                if abs(angle(v1)-angle(v2)) > math.pi/2:
-                    return(np.array([i, j]))
-    return(np.array([0, 0]))
-
-
 '''
 第三部分
 '''
@@ -258,23 +294,29 @@ def readcsv(path):  # 读取线条
     return(data)
 
 
-def drawline(data):  # 判断是否需要分割
+def drawline(data, data0):  # 判断是否需要分割
     global length
+    global storeys
     global times
     while True:
         data = divide1(data)
         data = divide2(data)
-        data = draw(data)
-        if data[0].shape[0] < 12:
-            writecsv(data[0])
-            break
-        i = 1
+        data = delcross(data)
+        i = 0
         while i < len(data):
-            if data.shape[0] < 12:
+            if data[i].shape[0] < 12:
                 del data[i]
                 print('-')
                 continue
+            data[i] = draw(data[i])
+            plt.plot(data[i][:, 0], data[i][:, 1],
+                     '-', color='r', markersize=3)
+            times += 1
             i += 1
+        if len(data) == 0:
+            break
+        storeys += 1
+        print(storeys)
     pass
 
 
@@ -284,8 +326,8 @@ def drawline(data):  # 判断是否需要分割
 
 start = time.thread_time()
 
-data = readcsv(path)
-data = drawline(data)
+data0 = readcsv(path)
+data = drawline(data0, data0)
 
 end = time.thread_time()
 print('Length of curve: %s mm' % length)
