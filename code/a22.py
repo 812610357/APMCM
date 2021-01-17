@@ -178,17 +178,16 @@ def ifnear(data, s):  # 分割点序号
 
 
 def delcross(data):
-    for i in range(len(data)):
-        j = 0
-        while j < data[i].shape[0]-3:
-            k = j
-            while k < j+(data[i].shape[0]-j)//4:
-                if ifcross(data[i][j, :], data[i][j+1, :], data[i][k, :], data[i][k+1, :]):
-                    data[i] = np.row_stack((data[i][:j, :], data[i][k+1:, :]))
-                    continue
-                else:
-                    k += 1
-            j += 1
+    i = 0
+    while i < data.shape[0]-3:
+        j = i
+        while j < i+(data.shape[0]-i)//4:
+            if ifcross(data[i, :], data[i+1, :], data[j, :], data[j+1, :]):
+                data = np.row_stack((data[:i, :], data[j+1:, :]))
+                continue
+            else:
+                j += 1
+        i += 1
     return(data)
 
 
@@ -201,6 +200,19 @@ def ifcross(p1, p2, q1, q2):
         return(1)
     else:
         return(0)
+
+
+def addlong(data):  # 同级点间距控制
+    i = 0
+    while i < data.shape[0]-1:  # 遍历所有数据
+        if np.linalg.norm(data[i+1, :]-data[i, :]) > 2*abs(d):  # 两点间距过大的添加中点
+            new = np.array([(data[i+1, 0]+data[i, 0])/2,
+                            (data[i+1, 1]+data[i, 1])/2])
+            data = np.insert(data, i+1, new,  axis=0)
+            continue
+        else:
+            i = i+1
+    return(data)
 
 
 def ifwide(data, last):  # 与上一级间距控制
@@ -222,19 +234,6 @@ def ifwide(data, last):  # 与上一级间距控制
             data = np.delete(data, i, axis=0)
             continue
         i += 1
-    return(data)
-
-
-def iflong(data):  # 同级点间距控制
-    i = 0
-    while i < data.shape[0]-1:  # 遍历所有数据
-        if np.linalg.norm(data[i+1, :]-data[i, :]) > 2*abs(d):  # 两点间距过大的添加中点
-            new = np.array([(data[i+1, 0]+data[i, 0])/2,
-                            (data[i+1, 1]+data[i, 1])/2])
-            data = np.insert(data, i+1, new,  axis=0)
-            continue
-        else:
-            i = i+1
     return(data)
 
 
@@ -267,7 +266,6 @@ def drawline(data):  # 画等高线
         dots += 1
     temp = np.delete(temp, 0, axis=0)
     temp = ifwide(temp, data)  # 与上一级间距控制
-    temp = iflong(temp)  # 同级点间距控制
     return(temp)
 
 
@@ -321,10 +319,11 @@ def draw(data):
     while True:
         data = divide1(data)
         data = divide2(data)
-        data = delcross(data)
         i = 0
         while i < len(data):
-            if data[i].shape[0] < 12:
+            data[i] = delcross(data[i])
+            data[i] = addlong(data)
+            if data[i].shape[0] < 15:
                 del data[i]
                 print('-')
                 continue
@@ -335,7 +334,7 @@ def draw(data):
                 writecsv(data[i])
                 getlength(data[i])
             data[i] = drawline(data[i])
-            if data[i].shape[0] < 12:
+            if data[i].shape[0] < 15:
                 del data[i]
                 continue
             data[i] = orderline(data[i])
