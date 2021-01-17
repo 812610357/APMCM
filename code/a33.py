@@ -33,7 +33,7 @@ def f_e_dot(v, head_dot):  # 根据向量和起点求末点
 
 
 def vec_sita(v, ang, head_dot):  # 根据初向量、α角、▲θ、原向量起始点
-    v_r = [d*math.sin(angle(v)+ang), d*math.cos(angle(v)+ang)]
+    v_r = [d*math.cos(ang), d*math.sin(ang)]
     return f_e_dot(v_r, head_dot)
 
 
