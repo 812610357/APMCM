@@ -6,7 +6,8 @@ import time
 
 plt.axis("equal")
 d = -0.1
-path = ".\code\graph2.csv"
+inputpath = ".\code\graph2.csv"
+outputpath = ".\code"
 length = 0  # 画线总长
 times = 0
 dots = 0
@@ -132,7 +133,7 @@ def getint(data):  # 按精度离散化
                     new[0] = (new[1]-y1)/k+x1
                     temp = np.row_stack((temp, new))
     temp = np.delete(temp, 0, axis=0)
-    plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
+    #plt.plot(temp[:, 0], temp[:, 1], '-o', color='g', markersize=2)
     return(temp)
 
 
@@ -292,7 +293,7 @@ def divide2(data, index):  # 对单连通区域进行划分
 def writecsv(data):  # 导出线条
     global times
     dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
-    dataframe.to_csv(f".\code\\zigzag{times}.csv",
+    dataframe.to_csv(outputpath+f"\zigzag{times}.csv",
                      index=False, mode='w', sep=',')
     pass
 
@@ -356,7 +357,7 @@ def drawline(data):  # 画平行线
 
 start = time.thread_time()
 
-data = readcsv(path)
+data = readcsv(inputpath)
 for i in range(len(data)):
     data[i] = drawborder(data[i])
     data[i] = getint(data[i])

@@ -5,8 +5,9 @@ import math
 import time
 
 plt.axis("equal")
-d = -0.1
-path = ".\code\graph1.csv"
+d = -1
+inputpath = ".\code\graph1.csv"
+outputpath = ".\code"
 length = 0
 storeys = 0
 times = 0
@@ -174,10 +175,10 @@ def ifnear(data, s):  # 分割点序号
     for i in range(s, data.shape[0]-2):
         point = -1  # 第二分割点指向
         for j in range(min(i+5, data.shape[0]-2), data.shape[0]-2):
-            if np.linalg.norm(data[i, :]-data[j, :]) < 1.5*abs(d):  # 间距过近且向量方向差超过90度
+            if np.linalg.norm(data[i, :]-data[j, :]) < 1.25*abs(d):  # 间距过近且向量方向差超过90度
                 v1 = data[i+2, :]-data[i, :]
                 v2 = data[j+2, :]-data[j, :]
-                if dot(v1, v2) < 0:
+                if abs(angle(v1)-angle(v2)) > math.pi/2:
                     point = j
             elif point > -1:
                 return(np.array([i, point]))
@@ -286,7 +287,7 @@ def drawline(data):  # 画等高线
     return(temp)
 
 
-def orderline(data):
+def orderline(data):  # 调整首端和末端的位置
     data = np.delete(data, -1, axis=0)
     data = np.row_stack((data, data[:10, :]))
     data = np.delete(data, [range(9)], axis=0)
@@ -300,7 +301,7 @@ def orderline(data):
 
 def writecsv(data):  # 导出线条
     dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
-    dataframe.to_csv(f".\code\contour{times}.csv",
+    dataframe.to_csv(outputpath+f"\contour{times}.csv",
                      index=False, mode='w', sep=',')
     pass
 
@@ -338,7 +339,7 @@ def draw(data):
         data = divide2(data)
         i = 0
         while i < len(data):
-            if data[i].shape[0] < 12:
+            if data[i].shape[0] < 15:
                 del data[i]
                 print('-')
                 continue
@@ -349,7 +350,7 @@ def draw(data):
                 writecsv(data[i])
                 getlength(data[i])
             data[i] = drawline(data[i])
-            if data[i].shape[0] < 12:
+            if data[i].shape[0] < 15:
                 del data[i]
                 continue
             data[i] = orderline(data[i])
@@ -367,7 +368,7 @@ def draw(data):
 
 start = time.thread_time()
 
-data = readcsv(path)
+data = readcsv(inputpath)
 data = draw(data)
 
 end = time.thread_time()
