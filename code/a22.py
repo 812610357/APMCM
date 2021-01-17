@@ -129,7 +129,7 @@ def ifclose(data1, data2):  # 连接点序号
     point2 = -2  # 第二个连接点，指向data2
     for i in range(data1.shape[0]):
         for j in range(data2.shape[0]):
-            if np.linalg.norm(data1[i, :]-data2[j, :]) < 0.8*abs(d):
+            if np.linalg.norm(data1[i, :]-data2[j, :]) < 0.9*abs(d):
                 if point2 == -2:
                     point1 = j
                 elif point1 == -2:
@@ -169,7 +169,7 @@ def divide2(data):
 def ifnear(data, s):  # 分割点序号
     for i in range(s, data.shape[0]-2):
         for j in range(min(i+5, data.shape[0]-2), data.shape[0]-2):
-            if np.linalg.norm(data[i, :]-data[j, :]) < 0.8*abs(d):  # 间距过近且向量方向差超过90度
+            if np.linalg.norm(data[i, :]-data[j, :]) < 0.9*abs(d):  # 间距过近且向量方向差超过90度
                 v1 = data[i+2, :]-data[i, :]
                 v2 = data[j+2, :]-data[j, :]
                 if dot(v1, v2) < 0:
@@ -307,6 +307,13 @@ def readcsv(path):  # 读取线条
     return(data)
 
 
+def getlength(data):
+    global length
+    for i in range(data.shape[0]-1):
+        length += np.linalg.norm(data[i+1, :]-data[i, :])
+    pass
+
+
 def draw(data):
     global length
     global storeys
@@ -326,6 +333,7 @@ def draw(data):
                 plt.plot(data[i][:, 0], data[i][:, 1],
                          '-', color='r', markersize=3)
                 writecsv(data[i])
+                getlength(data[i])
             data[i] = drawline(data[i])
             if data[i].shape[0] < 12:
                 del data[i]
