@@ -78,6 +78,10 @@ def cross(v1, v2):  # 平面内向量叉乘
     return(v1[0]*v2[1]-v2[0]*v1[1])
 
 
+def vertical(v, d):  # 求垂直向量
+    return(unit(np.array([v[1], -v[0]]))*abs(d))
+
+
 def divide1(data):  # 对复连通区域进行划分
     parent = np.array(findparent(data))
     for i in range(1, (max(parent[:, 1]+1))//2+1):  # 填充 i 层
@@ -168,12 +172,15 @@ def divide2(data):
 
 def ifnear(data, s):  # 分割点序号
     for i in range(s, data.shape[0]-2):
+        point = -1  # 第二分割点指向
         for j in range(min(i+5, data.shape[0]-2), data.shape[0]-2):
             if np.linalg.norm(data[i, :]-data[j, :]) < abs(d):  # 间距过近且向量方向差超过90度
                 v1 = data[i+2, :]-data[i, :]
                 v2 = data[j+2, :]-data[j, :]
                 if dot(v1, v2) < 0:
-                    return(np.array([i, j]))
+                    point = j
+            elif point > -1:
+                return(np.array([i, point]))
     return(np.array([]))
 
 
@@ -215,7 +222,7 @@ def addlong(data):  # 同级点间距控制
     return(data)
 
 
-def ifwide(data, last):  # 与上一级间距控制
+def delnarrow(data, last):  # 与上一级间距控制
     i = 0
     while i < data.shape[0]:  # 遍历该级所有数据
         j = 0
@@ -246,26 +253,36 @@ def drawline(data):  # 画等高线
     while i < data.shape[0]-2:
         v1 = data[i+1, :]-data[i, :]
         v2 = data[i+2, :]-data[i+1, :]
-        if 0 < inangle(v1, v2) < math.pi*0.9:  # 一般情况在菱形中使用向量得到内缩点
+        if cross(v1, v2) > 0 and dot(v1, v2) < 0 and storeys == 0:  # 外折时用圆弧补充
+            vv1 = vertical(v1, d)
+            vv2 = vertical(v2, d)
+            new = vv1+data[i+1, :]
+            ang = angle(vv1)+0.1
+            while ang < angle(vv2):
+                new = np.row_stack(
+                    (new, [math.cos(ang)*abs(d), math.sin(ang)*abs(d)]+data[i+1, :]))
+                ang += 0.1
+        elif 0 < inangle(v1, v2) < math.pi*0.9:  # 一般情况在菱形中使用向量得到内缩点
             u = d/(math.sin(inangle(v1, v2)))
             if cross(v1, v2) > 0:
                 new = data[i+1, :]+(unit(v2)-unit(v1))*u
             else:
                 new = data[i+1, :]-(unit(v2)-unit(v1))*u
-        else:
-            if inangle(v1, v2) == 0:  # 两向量平行的特殊情况
-                if angle(v1) > 0:
-                    new = data[i+1, :] + unit([v1[1], -v1[0]])*abs(d)
-                else:
-                    new = data[i+1, :] - unit([-v1[1], v1[0]])*abs(d)
-            else:  # 排除转角过大的点
-                i += 1
-                continue
+        elif inangle(v1, v2) == 0:  # 两向量平行的特殊情况
+            if angle(v1) > 0:
+                new = data[i+1, :] + unit([v1[1], -v1[0]])*abs(d)
+            else:
+                new = data[i+1, :] - unit([-v1[1], v1[0]])*abs(d)
+        else:  # 排除转角过大的点
+            i += 1
+            continue
         i += 1
         temp = np.row_stack((temp, new))
         dots += 1
     temp = np.delete(temp, 0, axis=0)
-    temp = ifwide(temp, data)  # 与上一级间距控制
+    temp = delcross(temp)
+    temp = addlong(temp)
+    temp = delnarrow(temp, data)  # 与上一级间距控制
     return(temp)
 
 
@@ -321,8 +338,6 @@ def draw(data):
         data = divide2(data)
         i = 0
         while i < len(data):
-            data[i] = delcross(data[i])
-            data[i] = addlong(data[i])
             if data[i].shape[0] < 15:
                 del data[i]
                 print('-')

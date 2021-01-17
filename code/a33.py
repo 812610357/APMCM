@@ -23,8 +23,8 @@ def angle(v):  # 取辐角
 
 
 def vertical(v, d):  # 求垂直向量
-    vt = [v[1], -v[0]]
-    return unit(vt)*d
+    vt = np.array([v[1], -v[0]])
+    return(unit(vt)*d)
 
 
 def f_e_dot(v, head_dot):  # 根据向量和起点求末点
