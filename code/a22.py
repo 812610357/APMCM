@@ -129,7 +129,7 @@ def ifclose(data1, data2):  # 连接点序号
     point2 = -2  # 第二个连接点，指向data2
     for i in range(data1.shape[0]):
         for j in range(data2.shape[0]):
-            if np.linalg.norm(data1[i, :]-data2[j, :]) < abs(d):
+            if np.linalg.norm(data1[i, :]-data2[j, :]) < 0.8*abs(d):
                 if point2 == -2:
                     point1 = j
                 elif point1 == -2:
@@ -238,7 +238,7 @@ def iflong(data):  # 同级点间距控制
     return(data)
 
 
-def draw(data):  # 画等高线
+def drawline(data):  # 画等高线
     global dots
     data = np.insert(data, data.shape[0], values=data[1, :], axis=0)
     data = np.insert(data, 0, values=data[data.shape[0]-3, :], axis=0)
@@ -271,6 +271,13 @@ def draw(data):  # 画等高线
     return(temp)
 
 
+def orderline(data):
+    data = np.delete(data, -1, axis=0)
+    data = np.row_stack((data, data[:10, :]))
+    data = np.delete(data, [range(9)], axis=0)
+    return(data)
+
+
 '''
 第三部分
 '''
@@ -300,7 +307,7 @@ def readcsv(path):  # 读取线条
     return(data)
 
 
-def drawline(data):
+def draw(data):
     global length
     global storeys
     global times
@@ -310,7 +317,7 @@ def drawline(data):
         data = delcross(data)
         i = 0
         while i < len(data):
-            if data[i].shape[0] < 15:
+            if data[i].shape[0] < 12:
                 del data[i]
                 print('-')
                 continue
@@ -319,13 +326,11 @@ def drawline(data):
                 plt.plot(data[i][:, 0], data[i][:, 1],
                          '-', color='r', markersize=3)
                 writecsv(data[i])
-            data[i] = draw(data[i])
-            i += 1
-        i = 0
-        while i < len(data):
-            if data[i].shape[0] == 0:
+            data[i] = drawline(data[i])
+            if data[i].shape[0] < 12:
                 del data[i]
                 continue
+            data[i] = orderline(data[i])
             i += 1
         if len(data) == 0:
             break
@@ -341,7 +346,7 @@ def drawline(data):
 start = time.thread_time()
 
 data = readcsv(path)
-data = drawline(data)
+data = draw(data)
 
 end = time.thread_time()
 print('Length of curve: %s mm' % length)
