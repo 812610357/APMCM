@@ -129,7 +129,7 @@ def ifclose(data1, data2):  # 连接点序号
     point2 = -2  # 第二个连接点，指向data2
     for i in range(data1.shape[0]):
         for j in range(data2.shape[0]):
-            if np.linalg.norm(data1[i, :]-data2[j, :]) < 0.9*abs(d):
+            if np.linalg.norm(data1[i, :]-data2[j, :]) < abs(d):
                 if point2 == -2:
                     point1 = j
                 elif point1 == -2:
@@ -169,7 +169,7 @@ def divide2(data):
 def ifnear(data, s):  # 分割点序号
     for i in range(s, data.shape[0]-2):
         for j in range(min(i+5, data.shape[0]-2), data.shape[0]-2):
-            if np.linalg.norm(data[i, :]-data[j, :]) < 0.9*abs(d):  # 间距过近且向量方向差超过90度
+            if np.linalg.norm(data[i, :]-data[j, :]) < abs(d):  # 间距过近且向量方向差超过90度
                 v1 = data[i+2, :]-data[i, :]
                 v2 = data[j+2, :]-data[j, :]
                 if dot(v1, v2) < 0:
@@ -322,7 +322,7 @@ def draw(data):
         i = 0
         while i < len(data):
             data[i] = delcross(data[i])
-            data[i] = addlong(data)
+            data[i] = addlong(data[i])
             if data[i].shape[0] < 15:
                 del data[i]
                 print('-')
