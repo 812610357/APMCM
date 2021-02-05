@@ -6,7 +6,7 @@ import time
 
 start = time.thread_time()
 
-data0 = np.array(pd.read_csv(".\code\graph1.csv", header=2))
+data0 = np.array(pd.read_csv("./code/graph1.csv", header=2))
 data = data0  # 从csv文件获取数据
 d = -1  # 精度
 plt.axis("equal")
@@ -156,7 +156,7 @@ def drawline(data):  # 判断是否需要分割
             if times > 0:
                 temp = delcross(temp)
                 writecsv(temp)
-                plt.plot(temp[:, 0], temp[:, 1], '-o', color='r', markersize=3)
+                plt.plot(temp[:, 0], temp[:, 1], '-', color='r', markersize=3)
             data[-1] = draw(temp)
             times += 1
             print(times)
@@ -176,7 +176,7 @@ def drawline(data):  # 判断是否需要分割
 def writecsv(data):
     global times
     dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
-    dataframe.to_csv(f".\code\contour{times}.csv",
+    dataframe.to_csv(f"./code/contour{times}.csv",
                      index=False, mode='w', sep=',')
     pass
 

@@ -6,8 +6,8 @@ import time
 
 plt.axis("equal")
 d = -0.1
-inputpath = ".\code\graph2.csv"
-outputpath = ".\code"
+inputpath = "./code/graph2.csv"
+outputpath = "./code"
 length = 0  # 画线总长
 times = 0
 dots = 0
@@ -293,7 +293,7 @@ def divide2(data, index):  # 对单连通区域进行划分
 def writecsv(data):  # 导出线条
     global times
     dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
-    dataframe.to_csv(outputpath+f"\zigzag{times}.csv",
+    dataframe.to_csv(outputpath+f"/zigzag{times}.csv",
                      index=False, mode='w', sep=',')
     pass
 

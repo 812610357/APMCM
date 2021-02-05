@@ -120,5 +120,6 @@
     ],
     "cSpell.enableFiletypes": [
         "bibtex"
-    ]
+    ],
+    "python.pythonPath": "/home/julian/anaconda3/bin/python"
 }

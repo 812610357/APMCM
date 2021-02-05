@@ -5,9 +5,9 @@ import math
 import time
 
 plt.axis("equal")
-d = -1
-inputpath = ".\code\graph1.csv"
-outputpath = ".\code"
+d = -0.1
+inputpath = "./code/graph2.csv"
+outputpath = "./code"
 length = 0
 storeys = 0
 times = 0
@@ -301,7 +301,7 @@ def orderline(data):  # 调整首端和末端的位置
 
 def writecsv(data):  # 导出线条
     dataframe = pd.DataFrame(data={'x': data[:, 0], 'y': data[:, 1]})
-    dataframe.to_csv(outputpath+f"\contour{times}.csv",
+    dataframe.to_csv(outputpath+f"/contour{times}.csv",
                      index=False, mode='w', sep=',')
     pass
 
